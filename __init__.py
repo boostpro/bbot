@@ -24,10 +24,7 @@ def reconfig(root_module_name):
                 and hasattr(v, '__file__') \
                 and v.__file__.startswith(root_dir):
             del sys.modules[k]
-            
-    
-config = {}
-
+                
 def master(
     name,
     bot_url,
@@ -39,8 +36,7 @@ def master(
     ):
 
     # In case we're being reloaded
-    config.clear()
-    c = config
+    c = {}
 
     ####### BUILDSLAVES
 
@@ -73,6 +69,9 @@ def master(
     def flatten(iter):
         return [x for x in chain(*[y for y in iter])]
 
+    for p in projects:
+        p.select_slaves(slaves)
+        
     # Configure the Schedulers, which decide how to react to incoming changes. 
     c['schedulers'] = flatten(p.schedulers for p in projects)
 

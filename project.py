@@ -1,4 +1,3 @@
-from bbot import config
 from buildbot.scheduler import AnyBranchScheduler
 from buildbot.schedulers.filter import ChangeFilter
 from memoize import memoize
@@ -44,6 +43,9 @@ def slave_property_match(slave, include, exclude):
             not any(slave.properties.getProperty(x) for x in exclude))
 
 class Project(object):
+
+    __all_slaves = None
+
     """
     A software project
     """
@@ -77,6 +79,10 @@ class Project(object):
         """Predicate returning True iff the given slave is eligible for use by this Project"""
         return slave_property_match(slave, self.include_properties, self.exclude_properties)
 
+    def select_slaves(self, slaves):
+        """Given a list of all eligible slaves, select the ones on which this project will build"""
+        self.__all_slaves = slaves
+
     def default_change_filter(self, *args, **kw):
         """The default change filter builds all changes in the given repositories"""
         return ChangeFilter(repository=[r.url for r in self.repositories], *args, **kw)
@@ -84,7 +90,7 @@ class Project(object):
     @const_property
     def slaves(self):
         """A list of the slaves used by this project"""
-        return [s for s in config['slaves'] if self.uses_slave(s)]
+        return [s for s in self.__all_slaves if self.uses_slave(s)]
 
     @const_property
     def platforms(self):
