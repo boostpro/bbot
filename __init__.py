@@ -1,6 +1,6 @@
 import os, sys
 
-def release_modules(root_module_name):
+def reconfig(root_module_name):
     """
     Release modules loaded after the named module that live in the
     same directory tree.
