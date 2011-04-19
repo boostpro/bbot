@@ -1,3 +1,31 @@
+import os, sys
+
+def release_modules(root_module_name):
+    """
+    Release modules loaded after the named module that live in the
+    same directory tree.
+
+    Given the name of a root module beginning with:
+
+      import sys
+      _initial_modules = set(sys.modules)
+
+    Releases from sys.modules everything in the same directory tree
+    that was not loaded before the cited module (including the module
+    itself).
+    """
+    root_module = sys.modules[root_module_name]
+    root_dir = os.path.dirname(root_module.__file__)
+    initial_modules = root_module._initial_modules
+    initial_modules.discard(root_module_name)
+
+    for k,v in sys.modules.items():
+        if not k in initial_modules \
+                and hasattr(v, '__file__') \
+                and v.__file__.startswith(root_dir):
+            del sys.modules[k]
+            
+    
 config = {}
 
 def master(
