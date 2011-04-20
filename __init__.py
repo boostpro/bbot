@@ -1,28 +1,27 @@
-import os, sys
+import sys
 
-def reconfig(root_module_name):
-    """
-    Release modules loaded after the named module that live in the
-    same directory tree.
+class _FinderLoader(object):
+    def find_module(self, fullname, path=None):
+        if fullname in sys._lazy_reloads:
+            return self
+        return None
 
-    Given the name of a root module beginning with:
+    def load_module(self, fullname):
+        if fullname in sys._lazy_reloads:
+            m = sys._lazy_reloads[fullname]
+            del sys._lazy_reloads[fullname]
+            sys.modules[fullname] = m
+            reload(m)
+            return m
 
-      import sys
-      _initial_modules = set(sys.modules)
+if not hasattr(sys, '_lazy_reloads'):
+    sys.meta_path = [_FinderLoader()]
+    sys._lazy_reloads = {}
 
-    Releases from sys.modules everything in the same directory tree
-    that was not loaded before the cited module (including the module
-    itself).
-    """
-    root_module = sys.modules[root_module_name]
-    root_dir = os.path.dirname(root_module.__file__)
-    initial_modules = root_module._initial_modules
-    initial_modules.discard(root_module_name)
-
+def lazy_reload(root_module_name):
     for k,v in sys.modules.items():
-        if not k in initial_modules \
-                and hasattr(v, '__file__') \
-                and v.__file__.startswith(root_dir):
+        if v and ('k' + '.').startswith(root_module_name + '.'):
+            sys._lazy_reloads[k] = v
             del sys.modules[k]
                 
 def master(
