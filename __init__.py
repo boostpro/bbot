@@ -1,28 +1,47 @@
 import sys
 
-class _FinderLoader(object):
+class _LazyReloader(object):
+    """
+    A function object that will be installed as sys.lazy_reload.  Call
+    it to cause modules to be reloaded at their next import.
+    """
+    def __init__(self):
+        self.lazy_reloads = {}
+        
+    def __call__(self, root_module_name):
+        """
+        If the named module (or any of its submodules) has been
+        loaded, the next time it is imported, it will first be
+        reloaded.
+        """
+        prefix = root_module_name + '.'
+        for k,v in sys.modules.items():
+            if v and (k + '.').startswith(prefix):
+                # save a record of the module
+                self.lazy_reloads[k] = v
+                # pretend we haven't loaded it yet
+                del sys.modules[k]
+                
+    #
+    # Implementation of the finder and loader protocols
+    # (http://www.python.org/dev/peps/pep-0302/)
+    #
     def find_module(self, fullname, path=None):
-        if fullname in sys._lazy_reloads:
-            return self
+        if fullname in self.lazy_reloads:
+            return self # we can handle this one
         return None
 
     def load_module(self, fullname):
-        if fullname in sys._lazy_reloads:
-            m = sys._lazy_reloads[fullname]
-            del sys._lazy_reloads[fullname]
-            sys.modules[fullname] = m
-            reload(m)
-            return m
+        m = self.lazy_reloads[fullname]
+        del self.lazy_reloads[fullname]
+        sys.modules[fullname] = m
+        reload(m)
+        return m
 
-if not hasattr(sys, '_lazy_reloads'):
-    sys.meta_path = [_FinderLoader()]
-    sys._lazy_reloads = {}
-
-def lazy_reload(root_module_name):
-    for k,v in sys.modules.items():
-        if v and ('k' + '.').startswith(root_module_name + '.'):
-            sys._lazy_reloads[k] = v
-            del sys.modules[k]
+# Install the lazy_reload facility
+if not hasattr(sys, 'lazy_reload'):
+    sys.lazy_reload = _LazyReloader()
+    sys.meta_path.append(sys.lazy_reload)
                 
 def master(
     name,
