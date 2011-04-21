@@ -1,48 +1,6 @@
-import sys
+from itertools import chain
+from buildbot.changes.pb import PBChangeSource
 
-class _LazyReloader(object):
-    """
-    A function object that will be installed as sys.lazy_reload.  Call
-    it to cause modules to be reloaded at their next import.
-    """
-    def __init__(self):
-        self.lazy_reloads = {}
-        
-    def __call__(self, root_module_name):
-        """
-        If the named module (or any of its submodules) has been
-        loaded, the next time it is imported, it will first be
-        reloaded.
-        """
-        prefix = root_module_name + '.'
-        for k,v in sys.modules.items():
-            if v and (k + '.').startswith(prefix):
-                # save a record of the module
-                self.lazy_reloads[k] = v
-                # pretend we haven't loaded it yet
-                del sys.modules[k]
-                
-    #
-    # Implementation of the finder and loader protocols
-    # (http://www.python.org/dev/peps/pep-0302/)
-    #
-    def find_module(self, fullname, path=None):
-        if fullname in self.lazy_reloads:
-            return self # we can handle this one
-        return None
-
-    def load_module(self, fullname):
-        m = self.lazy_reloads[fullname]
-        del self.lazy_reloads[fullname]
-        sys.modules[fullname] = m
-        reload(m)
-        return m
-
-# Install the lazy_reload facility
-if not hasattr(sys, 'lazy_reload'):
-    sys.lazy_reload = _LazyReloader()
-    sys.meta_path.append(sys.lazy_reload)
-                
 def master(
     name,
     bot_url,
@@ -77,13 +35,11 @@ def master(
     # put here: there are several in buildbot/changes/*.py to choose from.
 
     # This is the one used for BoostPro git repo changes
-    from buildbot.changes.pb import PBChangeSource
     c['change_source'] = change_source or PBChangeSource()
 
 
     ####### SCHEDULERS
 
-    from itertools import chain
     def flatten(iter):
         return [x for x in chain(*[y for y in iter])]
 
@@ -108,8 +64,6 @@ def master(
     # 'status' is a list of Status Targets. The results of each build will be
     # pushed to these targets. buildbot/status/*.py has a variety to choose from,
     # including web pages, email senders, and IRC bots.
-    from itertools import repeat
-
     c['status'] = flatten([s1(p1) for s1 in p1.status] for p1 in projects)
 
     ####### PROJECT IDENTITY
