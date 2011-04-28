@@ -127,7 +127,7 @@ class Project(object):
             AnyBranchScheduler(
                 name=self.name+'-'+procedure.name+'-scheduler', 
                 change_filter=self.change_filter,
-                treeStableTimer=None,
+                treeStableTimer=30,
                 builderNames=[
                     self.builder(platform,procedure)['name']
                     for platform in self.platforms
