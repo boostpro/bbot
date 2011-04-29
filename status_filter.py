@@ -115,7 +115,7 @@ def public_changes(changes):
 from buildbot.status import html
 class FilteredWebStatus(html.WebStatus):
     """A Buildbot web status that limits reporting to a subset of changes, builders, etc."""
-    def __init__(self, categories, status_filter=PublicStatus, change_filter=public_changes, *args, **kw):
+    def __init__(self, categories, status_filter=None, change_filter=public_changes, *args, **kw):
         self.__status_filter = status_filter
         self.__change_filter = change_filter
         html.WebStatus.__init__(self, *args, **kw)
