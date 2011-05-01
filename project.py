@@ -1,6 +1,7 @@
 from buildbot.scheduler import AnyBranchScheduler
 from buildbot.schedulers.filter import ChangeFilter
 from memoize import memoize
+import util
 
 class multimap(dict):
     """
@@ -134,3 +135,6 @@ class Project(object):
                     ])
             for procedure in self.build_procedures
             ]
+
+def from_module(m):
+    return util.init_from_module(Project, m)

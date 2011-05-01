@@ -14,6 +14,17 @@ def master(
     passwd_path = None
     ):
 
+    
+    # projects can be a module name whose submodules each describe a
+    # project by exporting attributes
+    if isinstance(projects, str):
+        p = []
+        from util import load_submodules
+        import project
+        for m in load_submodules(projects):
+            p.append(project.from_module(m))
+        projects = p
+
     # In case we're being reloaded
     c = {}
 
