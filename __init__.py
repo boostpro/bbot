@@ -4,11 +4,11 @@ from buildbot.changes.pb import PBChangeSource
 from buildbot.buildslave import BuildSlave
 
 def master(
-    name,
-    bot_url,
+    title,
+    buildbotURL,
     slaves,
     projects,
-    name_url = None,
+    titleURL = None,
     slavePortnum = 9989,
     change_source = None,
     passwd_path = None
@@ -82,8 +82,8 @@ def master(
     # waterfall HTML page. The 'projectURL' string will be used to provide a link
     # from buildbot HTML pages to your project's home page.
 
-    c['projectName'] = name
-    c['projectURL'] = name_url or bot_url
+    c['projectName'] = title
+    c['projectURL'] = titleURL or buildbotURL
 
     # the 'buildbotURL' string should point to the location where the buildbot's
     # internal web server (usually the html.WebStatus page) is visible. This
@@ -91,7 +91,7 @@ def master(
     # with an externally-visible host name which the buildbot cannot figure out
     # without some help.
 
-    c['buildbotURL'] = bot_url
+    c['buildbotURL'] = buildbotURL.rstrip('/') + '/'
 
     ####### DB URL
 
