@@ -1,5 +1,7 @@
+import os
 from itertools import chain
 from buildbot.changes.pb import PBChangeSource
+from buildbot.buildslave import BuildSlave
 
 def master(
     name,
@@ -8,7 +10,8 @@ def master(
     projects,
     name_url = None,
     slavePortnum = 9989,
-    change_source = None
+    change_source = None,
+    passwd_path = None
     ):
 
     # In case we're being reloaded
@@ -20,8 +23,14 @@ def master(
     # element is a BuildSlave object, specifying a unique slave name and
     # password.  The same slave name and password must be configured on
     # the slave.
+    
+    if passwd_path is None:
+        passwd_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'passwd')
 
-    c['slaves'] = slaves
+    if os.path.isfile(passwd_path):
+        passwords = dict(line.rstrip().split(':') for line in open(passwd_path))
+
+    c['slaves'] = [BuildSlave(s.name, s.password or passwords[s.name], *s.args, **s.kw) for s in slaves]
 
     # 'slavePortnum' defines the TCP port to listen on for connections from slaves.
     # This must match the value configured into the buildslaves (with their
@@ -44,7 +53,7 @@ def master(
         return [x for x in chain(*[y for y in iter])]
 
     for p in projects:
-        p.select_slaves(slaves)
+        p.select_slaves(c['slaves'])
         
     # Configure the Schedulers, which decide how to react to incoming changes. 
     c['schedulers'] = flatten(p.schedulers for p in projects)
