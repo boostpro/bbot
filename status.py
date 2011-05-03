@@ -12,8 +12,8 @@ class StatusFactory(object):
         self.args = args
         self.kw = kw
 
-    def __call__(self, project):
-        return self.klass(*self.args, categories=[project.name], **self.kw)
+    def __call__(self, project=None):
+        return self.klass(*self.args, categories=project and [project.name] or None, **self.kw)
 
 default_authz=authz.Authz(
     gracefulShutdown = True,
@@ -41,7 +41,7 @@ def MailNotifier(*args, **kw):
     from buildbot.status import mail
     return StatusFactory(mail.MailNotifier, *args, **kw)
 
-def GitHubWebStatus(project, authz=default_authz, *args, **kw):
+def GitHubWebStatus(authz=default_authz, *args, **kw):
     """Generates WebStatus specifically for github projects"""
 
     def revlink(sha, repo):

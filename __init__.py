@@ -10,7 +10,8 @@ def master(
     titleURL = None,
     slavePortnum = 9989,
     change_source = None,
-    passwd_path = None
+    passwd_path = None,
+    status = []
     ):
 
     
@@ -86,7 +87,7 @@ def master(
     # 'status' is a list of Status Targets. The results of each build will be
     # pushed to these targets. buildbot/status/*.py has a variety to choose from,
     # including web pages, email senders, and IRC bots.
-    c['status'] = flatten([s1(p1) for s1 in p1.status] for p1 in projects)
+    c['status'] = flatten([s1(p1) for s1 in p1.status] for p1 in projects) + status
 
     ####### PROJECT IDENTITY
 
