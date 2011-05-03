@@ -1,7 +1,6 @@
 import os
-from itertools import chain
+from util import flatten
 from buildbot.changes.pb import PBChangeSource
-from buildbot.buildslave import BuildSlave
 
 def master(
     title,
@@ -25,9 +24,20 @@ def master(
             p.append(project.from_module(m))
         projects = p
 
-    # In case we're being reloaded
     c = {}
 
+    ####### PASSWORDS
+
+    # If you have chosen not to store passwords directly in the .cfg
+    # file, you can provide the path to a passwords file that will be
+    # parsed here.
+    if passwd_path is None:
+        passwd_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'passwd')
+
+    passwords = None
+    if os.path.isfile(passwd_path):
+        passwords = dict(line.rstrip().split(':') for line in open(passwd_path))
+    
     ####### BUILDSLAVES
 
     # The 'slaves' list defines the set of recognized buildslaves. Each
@@ -35,13 +45,8 @@ def master(
     # password.  The same slave name and password must be configured on
     # the slave.
     
-    if passwd_path is None:
-        passwd_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'passwd')
-
-    if os.path.isfile(passwd_path):
-        passwords = dict(line.rstrip().split(':') for line in open(passwd_path))
-
-    c['slaves'] = [BuildSlave(s.name, s.password or passwords[s.name], *s.args, **s.kw) for s in slaves]
+    for s in slaves: s.prepare(passwords)
+    c['slaves'] = slaves
 
     # 'slavePortnum' defines the TCP port to listen on for connections from slaves.
     # This must match the value configured into the buildslaves (with their
@@ -59,9 +64,6 @@ def master(
 
 
     ####### SCHEDULERS
-
-    def flatten(iter):
-        return [x for x in chain(*[y for y in iter])]
 
     for p in projects:
         p.select_slaves(c['slaves'])

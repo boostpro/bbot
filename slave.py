@@ -1,6 +1,68 @@
-class Slave(object):
-    def __init__(self, name, password=None, *args, **kw):
-        self.name = name
-        self.password = password
-        self.args = args
-        self.kw = kw
+from buildbot.buildslave import BuildSlave
+from memoize import memoize
+from collections import Iterable
+from platform import Platform
+
+class Slave(BuildSlave):
+    """
+    """
+    def __init__(self, name, password=None, properties={}, *args, **kw):
+        self.__name = name
+        self.__password = password
+        self.__args = args
+        self.__kw = kw
+        self.__properties = properties
+    
+    def prepare(self, passwords):
+        BuildSlave.__init__(
+            self,
+            self.__name, 
+            self.__password or passwords[self.__name], 
+            properties=self.__properties, 
+            *self.__args, **self.__kw)
+    
+    def platforms(self, features):
+        """
+        For a given sorted tuple of features, return a sequence of all
+        platform tuples consisting of just those features that are
+        supported by this slave.
+
+        >>> s = Slave('foo', None, properties={ 'a':(1, 2, 3), 'b': 4, 'c':(5,6) })
+        >>> s.platforms(('a',))
+        [Platform((('a', 1),)), Platform((('a', 2),)), Platform((('a', 3),))]
+        >>> s.platforms(('b',))
+        [Platform((('b', 4),))]
+        >>> s.platforms(('a','b'))
+        [Platform((('a', 1), ('b', 4))), Platform((('a', 2), ('b', 4))), Platform((('a', 3), ('b', 4)))]
+        >>> s.platforms(('a', 'c'))
+        [Platform((('a', 1), ('c', 5))), Platform((('a', 1), ('c', 6))), Platform((('a', 2), ('c', 5))), Platform((('a', 2), ('c', 6))), Platform((('a', 3), ('c', 5))), Platform((('a', 3), ('c', 6)))]
+        >>> s.platforms(('d'))
+        []
+        """
+        return [ Platform(x) for x in self.__platforms(features) ]
+
+    def __platforms(self, features):
+        i = iter(features)
+        try:
+            f = i.next()
+        except StopIteration:
+            return [()]
+
+        vs = self.__properties.get(f, ())
+
+        if isinstance(vs, (str,unicode)) or not isinstance(vs, Iterable):
+            vs = (vs,)
+        
+        tails = self.platforms(i)
+
+        r = []
+        for v in vs:
+            property = (f,v)
+            for t in tails:
+                r.append( (property,) + t )
+
+        return r
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

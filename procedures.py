@@ -5,6 +5,12 @@ from buildbot.steps.slave import SetPropertiesFromEnv
 from buildbot.process.properties import WithProperties
 
 class BuildProcedure(factory.BuildFactory):
+    """
+    >>> { BuildProcedure('a') : 1 }.get(BuildProcedure('b'))
+    >>> 
+    """
+    compare_attrs = factory.BuildFactory.compare_attrs + ['name']
+
     def __init__(self, name):
         factory.BuildFactory.__init__(self)
         self.name = name
@@ -17,6 +23,9 @@ class BuildProcedure(factory.BuildFactory):
         for s in steps_:
             self.addStep(s)
         return self
+
+    def __repr__(self):
+        return self.__class__.__name__ + '(' + repr(self.name) + ')' 
 
 def Emacs():
     return WithProperties(
@@ -49,3 +58,7 @@ class GitHubElisp(BuildProcedure):
         for t in testnames or ['test/test']:
             self.addStep(EmacsTest(load= t+'.el'))
 
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()

@@ -1,4 +1,5 @@
 import inspect, os, sys
+from itertools import chain
 
 def _import(module_name):
     __import__(module_name)
@@ -49,3 +50,10 @@ def init_from_module(klass, m):
     
     return klass(**kw)
     
+
+def flatten(iter):
+    """
+    Turns an iterable of iterables of elements into a flat list of
+    elements
+    """
+    return [x for x in chain(*[y for y in iter])]

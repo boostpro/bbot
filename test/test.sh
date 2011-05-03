@@ -7,16 +7,24 @@
 
 set -e
 
+for x in memoize platform procedures slave status ; do
+    python ../$x.py
+done
+
+buildbot checkconfig
 buildbot create-master
 
-buildbot start
+echo '************** START ***************'
+buildbot start || (buildbot stop ; exit 1)
 sleep 1
-buildbot reconfig || echo '************** RECONFIG FAILED ***************'
+echo '************** RECONFIG ***************'
+buildbot reconfig || (buildbot stop ; exit 1)
 sleep 1
+echo '************** STOP ***************'
 buildbot stop
 
 # Clean up the source directory
-rm -rf *.sample public_html state.sqlite twistd.log buildbot.tac
+rm -rf *.sample public_html state.sqlite twistd.log buildbot.tac project*
 
 # It's also desirable to be able to run checkconfig directly from the
 # root of the source tree during development, using an unmodified

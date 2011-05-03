@@ -1,6 +1,7 @@
 from buildbot.status import html
 from buildbot.status.web import authz
 from status_filter import *
+import re
 
 class StatusFactory(object):
     """
@@ -42,11 +43,34 @@ def MailNotifier(*args, **kw):
 
 def GitHubWebStatus(project, authz=default_authz, *args, **kw):
     """Generates WebStatus specifically for github projects"""
+
+    def revlink(sha, repo):
+        """
+        >>> revlink('deadbeef', 'git@github.com:user/repo.git')
+        http://github.com/user/repo/commit/deadbeef
+        >>> revlink('deadbeef', 'http://github.com/user/repo.git')
+        http://github.com/user/repo/commit/deadbeef
+        >>> revlink('deadbeef', 'https://userid@github.com/user/repo.git')
+        http://github.com/user/repo/commit/deadbeef
+        >>> revlink('deadbeef', 'git://github.com/boostpro/lazy_reload.git')
+        http://github.com/user/repo/commit/deadbeef
+        >>> revlink('deadbeef', 'git://github.com/boostpro/lazy_reload')
+        http://github.com/user/repo/commit/deadbeef
+        """
+        m = re.match(r'(?:git@|(?:https?|git)://(?:[^@]+@))github.com[:/](.*?)(?:\.git)?')
+        if not m:
+            return 'unparseable: '+repo
+
+        return 'http://github.com/'+m.group(1)+'/commit/' + sha
+
     return WebStatus(*args, 
                       authz=authz,
                       order_console_by_time=True,
-                      revlink='http://github.com/'+project+'/commit/%s',
+                      revlink=revlink,
                       change_hook_dialects={ 'github' : True },
                       **kw)
 
 
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()

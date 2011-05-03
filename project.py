@@ -1,6 +1,6 @@
 from buildbot.scheduler import AnyBranchScheduler
 from buildbot.schedulers.filter import ChangeFilter
-from memoize import memoize
+from memoize import memoize, const_property
 import util
 
 class multimap(dict):
@@ -11,32 +11,7 @@ class multimap(dict):
     element whose value is the empty list.
     """
     def __getitem__(self, key):
-        v = self.get(key)
-        if v is None:
-            v = self[key] = list()
-        return v
-
-def const_property(fn):
-    """
-    A decorator for lazily-computed, memoized, read-only properties.
-
-    class X(object):
-        @const_property
-        def some_attribute_name():
-            return compute_the_value();
-    
-    a = X()
-    b = x.some_attribute_name # compute_the_value called here
-    c = x.some_attribute_name # compute_the_value not called again
-    """
-    @property
-    def wrapped(self):
-        attrname = '_const_property__' + fn.__name__
-        if not hasattr(self, attrname):
-            setattr(self, attrname, fn(self))
-        return getattr(self, attrname)
-
-    return wrapped
+        return self.setdefault(key, [])
 
 def slave_property_match(slave, include, exclude):
     """Returns true iff the slave has all properties in include and none in exclude"""
@@ -95,19 +70,20 @@ class Project(object):
 
     @const_property
     def platforms(self):
-        """A dict mapping platform names to lists of slaves"""
+        """A dict mapping platforms to lists of slaves"""
         r = multimap()
         for s in self.slaves:
-            r[s.properties['os']].append(s)
+            for p in s.platforms(self.include_properties):
+                r[p].append(s)
         return r
 
     @memoize
     def builder(self, platform, procedure):
         """Returns a builder for this project on the named platform using a given BuildProcedure"""
-        id = self.name+'-'+platform+'-'+procedure.name
+        id = self.name+'-'+str(platform)+'-'+procedure.name
         return dict(
             name=id,
-            slavenames=[s.slavename for s in self.slaves if s.properties['os'] == platform],
+            slavenames=[s.slavename for s in self.platforms[platform]],
             category=self.name,
             builddir=id,
             factory=procedure)
