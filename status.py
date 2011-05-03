@@ -57,7 +57,7 @@ def GitHubWebStatus(authz=default_authz, *args, **kw):
         >>> revlink('deadbeef', 'git://github.com/boostpro/lazy_reload')
         http://github.com/user/repo/commit/deadbeef
         """
-        m = re.match(r'(?:git@|(?:https?|git)://(?:[^@]+@))github.com[:/](.*?)(?:\.git)?')
+        m = re.match(r'(?:git@|(?:https?|git)://(?:[^@]+@))github.com[:/](.*?)(?:\.git)?', repo)
         if not m:
             return 'unparseable: '+repo
 
