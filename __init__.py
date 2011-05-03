@@ -1,6 +1,7 @@
 import os
 from util import flatten
 from buildbot.changes.pb import PBChangeSource
+from lazy_reload import lazy_reload
 
 def master(
     title,
@@ -18,6 +19,7 @@ def master(
     # projects can be a module name whose submodules each describe a
     # project by exporting attributes
     if isinstance(projects, str):
+        lazy_reload(projects)
         p = []
         from util import load_submodules
         import project

@@ -9,11 +9,8 @@ def load_submodules(parent_module_name):
     """
     import and return a list of all submodules of the named module
     """
-    print 'parent_module_name=', parent_module_name
     parent = _import(parent_module_name)
-    print 'parent=', parent
     pdir = os.path.dirname(parent.__file__)
-    print 'pdir=', pdir
 
     ret = []
 
@@ -26,8 +23,6 @@ def load_submodules(parent_module_name):
         else:
             continue
         
-        print 'submodule_name=', submodule_name
-        print 'loading:', parent_module_name+'.'+submodule_name
         ret.append(_import(parent_module_name+'.'+submodule_name))
 
     return ret
