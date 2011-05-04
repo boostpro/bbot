@@ -84,6 +84,7 @@ class Project(object):
         return dict(
             name=id,
             slavenames=[s.slavename for s in self.platforms[platform]],
+            properties=dict(platform),
             category=self.name,
             builddir=id,
             factory=procedure)
