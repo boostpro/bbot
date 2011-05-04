@@ -1,5 +1,6 @@
 from buildbot.scheduler import AnyBranchScheduler
 from buildbot.schedulers.filter import ChangeFilter
+from buildbot.config import BuilderConfig
 from memoize import memoize, const_property
 import util
 
@@ -81,7 +82,7 @@ class Project(object):
     def builder(self, platform, procedure):
         """Returns a builder for this project on the named platform using a given BuildProcedure"""
         id = self.name+'-'+str(platform)+'-'+procedure.name
-        return dict(
+        return BuilderConfig(
             name=id,
             slavenames=[s.slavename for s in self.platforms[platform]],
             properties=dict(platform),
@@ -107,7 +108,7 @@ class Project(object):
                 change_filter=self.change_filter,
                 treeStableTimer=30,
                 builderNames=[
-                    self.builder(platform,procedure)['name']
+                    self.builder(platform,procedure).name
                     for platform in self.platforms
                     ])
             for procedure in self.build_procedures
