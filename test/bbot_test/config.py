@@ -10,8 +10,8 @@ BuildmasterConfig = bbot.master(
 
 
     slaves = [
-        Slave('slave1', 'password1', properties=dict(os='OS1', cc=['g++', 'vc8'])),
-        Slave('slave2', 'password2', properties=dict(os='OS2', cc=['intel', 'clang']))
+        Slave('slave1', 'password1', properties=dict(os='OS1', ccs=['g++', 'vc8'])),
+        Slave('slave2', 'password2', properties=dict(os='OS2', ccs=['intel', 'clang']))
         ], 
 
     projects = [

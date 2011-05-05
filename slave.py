@@ -27,15 +27,15 @@ class Slave(BuildSlave):
         platform tuples consisting of just those features that are
         supported by this slave.
 
-        >>> s = Slave('foo', None, properties={ 'a':(1, 2, 3), 'b': 4, 'c':(5,6) })
-        >>> s.platforms(('a',))
-        [Platform((('a', 1),)), Platform((('a', 2),)), Platform((('a', 3),))]
-        >>> s.platforms(('b',))
-        [Platform((('b', 4),))]
-        >>> s.platforms(('a','b'))
-        [Platform((('a', 1), ('b', 4))), Platform((('a', 2), ('b', 4))), Platform((('a', 3), ('b', 4)))]
-        >>> s.platforms(('a', 'c'))
-        [Platform((('a', 1), ('c', 5))), Platform((('a', 1), ('c', 6))), Platform((('a', 2), ('c', 5))), Platform((('a', 2), ('c', 6))), Platform((('a', 3), ('c', 5))), Platform((('a', 3), ('c', 6)))]
+        >>> s = Slave('foo', None, properties=dict( As=(1, 2, 3), B=4, Cs=(5,6) ))
+        >>> s.platforms(('A',))
+        [Platform((('A', 1),)), Platform((('A', 2),)), Platform((('A', 3),))]
+        >>> s.platforms(('B',))
+        [Platform((('B', 4),))]
+        >>> s.platforms(('A','B'))
+        [Platform((('A', 1), ('B', 4))), Platform((('A', 2), ('B', 4))), Platform((('A', 3), ('B', 4)))]
+        >>> s.platforms(('A', 'C'))
+        [Platform((('A', 1), ('C', 5))), Platform((('A', 1), ('C', 6))), Platform((('A', 2), ('C', 5))), Platform((('A', 2), ('C', 6))), Platform((('A', 3), ('C', 5))), Platform((('A', 3), ('C', 6)))]
         >>> s.platforms(('d'))
         []
         """
@@ -48,10 +48,11 @@ class Slave(BuildSlave):
         except StopIteration:
             return [()]
 
-        vs = self.__properties.get(f, ())
-
-        if isinstance(vs, (str,unicode)) or not isinstance(vs, Iterable):
-            vs = (vs,)
+        v = self.__properties.get(f)
+        if v:
+            vs = (v,)
+        else:
+            vs = self.__properties.get(f+'s', ())
         
         tails = self.platforms(i)
 
