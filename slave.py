@@ -6,53 +6,54 @@ from platform import Platform
 class Slave(BuildSlave):
     """
     """
-    def __init__(self, name, password=None, properties={}, *args, **kw):
+    def __init__(self, name, password=None, features={}, *args, **kw):
         self.__name = name
         self.__password = password
         self.__args = args
         self.__kw = kw
-        self.__properties = properties
+        self.__features = features
+
+    @property
+    def features(self): 
+        return self.__features
     
     def prepare(self, passwords):
         BuildSlave.__init__(
             self,
             self.__name, 
             self.__password or passwords[self.__name], 
-            properties=self.__properties, 
             *self.__args, **self.__kw)
     
-    def platforms(self, features):
+    def platforms(self, relevant_features):
         """
         For a given sorted tuple of features, return a sequence of all
         platform tuples consisting of just those features that are
         supported by this slave.
 
-        >>> s = Slave('foo', None, properties=dict( As=(1, 2, 3), B=4, Cs=(5,6) ))
-        >>> s.platforms(('A',))
-        [Platform((('A', 1),)), Platform((('A', 2),)), Platform((('A', 3),))]
-        >>> s.platforms(('B',))
-        [Platform((('B', 4),))]
-        >>> s.platforms(('A','B'))
-        [Platform((('A', 1), ('B', 4))), Platform((('A', 2), ('B', 4))), Platform((('A', 3), ('B', 4)))]
-        >>> s.platforms(('A', 'C'))
-        [Platform((('A', 1), ('C', 5))), Platform((('A', 1), ('C', 6))), Platform((('A', 2), ('C', 5))), Platform((('A', 2), ('C', 6))), Platform((('A', 3), ('C', 5))), Platform((('A', 3), ('C', 6)))]
+        >>> s = Slave('foo', None, features=dict( a=(1, 2, 3), b=4, c=(5,6) ))
+        >>> s.platforms(('a',))
+        [Platform((('a', 1),)), Platform((('a', 2),)), Platform((('a', 3),))]
+        >>> s.platforms(('b',))
+        [Platform((('b', 4),))]
+        >>> s.platforms(('a','b'))
+        [Platform((('a', 1), ('b', 4))), Platform((('a', 2), ('b', 4))), Platform((('a', 3), ('b', 4)))]
+        >>> s.platforms(('a', 'c'))
+        [Platform((('a', 1), ('c', 5))), Platform((('a', 1), ('c', 6))), Platform((('a', 2), ('c', 5))), Platform((('a', 2), ('c', 6))), Platform((('a', 3), ('c', 5))), Platform((('a', 3), ('c', 6)))]
         >>> s.platforms(('d'))
         []
         """
-        return [ Platform(x) for x in self.__platforms(features) ]
+        return [ Platform(x) for x in self.__platforms(relevant_features) ]
 
-    def __platforms(self, features):
-        i = iter(features)
+    def __platforms(self, relevant_features):
+        i = iter(relevant_features)
         try:
             f = i.next()
         except StopIteration:
             return [()]
 
-        v = self.__properties.get(f)
-        if v:
-            vs = (v,)
-        else:
-            vs = self.__properties.get(f+'s', ())
+        vs = self.__features.get(f, ())
+        if isinstance(vs, (str,unicode)) or not isinstance(vs, Iterable):
+            vs = (vs,)
         
         tails = self.platforms(i)
 

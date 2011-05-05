@@ -16,8 +16,8 @@ class multimap(dict):
 
 def slave_property_match(slave, include, exclude):
     """Returns true iff the slave has all properties in include and none in exclude"""
-    return (all(slave.properties.getProperty(x) for x in include) and
-            not any(slave.properties.getProperty(x) for x in exclude))
+    return (all(slave.features.get(x) for x in include) and
+            not any(slave.features.get(x) for x in exclude))
 
 class Project(object):
 
@@ -31,18 +31,18 @@ class Project(object):
         name,                       # the project's name, a string
         repositories,               # a sequence of repository.Repository's
         build_procedures,           # a sequence of procedure.BuildProcedure's
-        include_properties=[],      # a sequence of property names that all testing slaves must posses
-        exclude_properties=[],      # a sequence of property names that testing slaves must not posses
+        include_features=[],        # a sequence of features that all testing slaves must posses
+        exclude_features=[],        # a sequence of features that testing slaves must not posses
         make_change_filter=None,    # a function called on this project to produce a suitable ChangeFilter
         status=[]                   # a sequence of status reporters for this project
     ):
         self.name = name
         self.repositories = repositories
         for repo in self.repositories:
-            repo.set_properties(include_properties, exclude_properties)
+            repo.set_properties(include_features, exclude_features)
         self.build_procedures = build_procedures
-        self.include_properties = include_properties
-        self.exclude_properties = exclude_properties
+        self.include_features = include_features
+        self.exclude_features = exclude_features
         self.status = status
         if make_change_filter:
             self.change_filter = make_change_filter(self)
@@ -54,7 +54,7 @@ class Project(object):
 
     def uses_slave(self, slave):
         """Predicate returning True iff the given slave is eligible for use by this Project"""
-        return slave_property_match(slave, self.include_properties, self.exclude_properties)
+        return slave_property_match(slave, self.include_features, self.exclude_features)
 
     def select_slaves(self, slaves):
         """Given a list of all eligible slaves, select the ones on which this project will build"""
@@ -74,7 +74,7 @@ class Project(object):
         """A dict mapping platforms to lists of slaves"""
         r = multimap()
         for s in self.slaves:
-            for p in s.platforms(self.include_properties):
+            for p in s.platforms(self.include_features):
                 r[p].append(s)
         return r
 

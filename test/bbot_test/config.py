@@ -10,21 +10,23 @@ BuildmasterConfig = bbot.master(
 
 
     slaves = [
-        Slave('slave1', 'password1', properties=dict(os='OS1', ccs=['g++', 'vc8'])),
-        Slave('slave2', 'password2', properties=dict(os='OS2', ccs=['intel', 'clang']))
+        Slave('slave1', 'password1', features=dict(os='OS1', cc=['g++', 'vc8'])),
+        Slave('slave2', 'password2', features=dict(os='OS2', cc=['intel', 'clang']))
         ], 
 
     projects = [
         Project('project1',
                 repositories=[GitHub('boostpro/bbot')],
-                include_properties = ['cc'],
+                include_features = ['cc'],
                 build_procedures=[ BuildProcedure('build') ]
                 ),
         Project('project2',
                 repositories=[GitHub('boostpro/bbot')],
-                include_properties = ['os', 'cc'],
+                include_features = ['os', 'cc'],
                 build_procedures=[ 
                     BuildProcedure('build'), BuildProcedure('test')]
                 ),
         ]
 )
+
+assert len(BuildmasterConfig['builders']) == 12

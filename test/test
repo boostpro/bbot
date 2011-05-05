@@ -6,6 +6,7 @@
 # __init__.py for more details about the reasons for this
 
 set -e
+export PATH="~/.virtualenvs/bb/bin:$PATH"
 
 for x in memoize platform procedures slave status ; do
     python ../$x.py
