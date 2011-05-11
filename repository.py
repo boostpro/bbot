@@ -49,11 +49,14 @@ class Git(Repository):
 class GitHub(Git):
     def __init__(self, id, protocol='https'):
         
+        ## NOTE: do *not* add the .git suffix here; the repository
+        ## that comes back from the GitHub service hook doesn't have
+        ## it.  Unless they match no builds will be triggered!
         protocols=dict(
-            git='git://github.com/%s.git',
-            http='http://github.com/%s.git',
-            https='https://github.com/%s.git',
-            ssh='git@github.com:%s.git',
+            git='git://github.com/%s',
+            http='http://github.com/%s',
+            https='https://github.com/%s',
+            ssh='git@github.com:%s',
             )
 
         super(GitHub,self).__init__(protocols[protocol] % id)
