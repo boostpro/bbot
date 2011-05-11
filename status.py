@@ -1,6 +1,7 @@
 from buildbot.status import html
 from buildbot.status.web import authz
 from status_filter import *
+from twisted.python import log
 import re
 
 class StatusFactory(object):
@@ -41,8 +42,11 @@ def MailNotifier(*args, **kw):
     from buildbot.status import mail
     return StatusFactory(mail.MailNotifier, *args, **kw)
 
+
 def GitHubWebStatus(authz=default_authz, *args, **kw):
     """Generates WebStatus specifically for github projects"""
+
+    url_pat = re.compile(r'(?:git@|(?:https?|git)://(?:[^@]+@))github.com[:/](.*?)(?:\.git)?')
 
     def revlink(sha, repo):
         """
@@ -56,10 +60,13 @@ def GitHubWebStatus(authz=default_authz, *args, **kw):
         http://github.com/user/repo/commit/deadbeef
         >>> revlink('deadbeef', 'git://github.com/boostpro/lazy_reload')
         http://github.com/user/repo/commit/deadbeef
+        >>> revlink('deadbeef', 'https://github.com/ryppl/Boost.Defrag'
+        http://github.com/ryppl/Boost.Defrag/commit/deadbeef
         """
-        m = re.match(r'(?:git@|(?:https?|git)://(?:[^@]+@))github.com[:/](.*?)(?:\.git)?', repo)
+        m = url_pat.match(repo)
         if not m:
-            return 'unparseable: '+repo
+            log.msg('GitHubWebStatus: unparseable url %r' % repo)
+            return 'unparseable:'+repo
 
         return 'http://github.com/'+m.group(1)+'/commit/' + sha
 
