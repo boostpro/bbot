@@ -1,6 +1,9 @@
 repositories = {}
 
 class Repository(object):
+
+    stepClass = None
+
     def __init__(self, url, properties=None):
         self.url = url
         self.properties = properties or {}
@@ -25,7 +28,33 @@ class Repository(object):
             else:
                 self.properties[p] = False
 
-class GitHub(Repository):
-    def __init__(self, id):
-        super(GitHub,self).__init__('https://github.com/%s' % id)
+    def step(self, *args, **kw):
+        return self.stepClass(repourl = self.url, *args, **kw)
+
+
+import buildbot.steps.source
+
+class Git(Repository):
+    """
+    A repository whose steps use Git, but unlike BuildBot, *do*
+    consider submodules by default.  Seriously, who wants to ignore
+    submodules?
+    """
+    stepClass = buildbot.steps.source.Git
+
+    def step(self, *args, **kw):
+        kw.setdefault('submodules', True)
+        return super(Git,self).step(*args, **kw)
+
+class GitHub(Git):
+    def __init__(self, id, protocol='https'):
+        
+        protocols=dict(
+            git='git://github.com/%s.git',
+            http='http://github.com/%s.git',
+            https='https://github.com/%s.git',
+            ssh='git@github.com:%s.git',
+            )
+
+        super(GitHub,self).__init__(protocols[protocol] % id)
 
