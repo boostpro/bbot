@@ -1,3 +1,5 @@
+import re
+
 repositories = {}
 
 class Repository(object):
@@ -46,6 +48,13 @@ class Git(Repository):
         kw.setdefault('submodules', True)
         kw.setdefault('progress', True)  # lest a long checkout time out
         return super(Git,self).step(*args, **kw)
+
+    @property
+    def name(self):
+        """
+        The name of the repository: the last element of the url, sans .git extension if any
+        """
+        return re.match('.*/(.*?)(?:.git)?$', self.url).group(1)
 
 class GitHub(Git):
     def __init__(self, id, protocol='https'):
