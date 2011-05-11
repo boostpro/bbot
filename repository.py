@@ -44,6 +44,7 @@ class Git(Repository):
 
     def step(self, *args, **kw):
         kw.setdefault('submodules', True)
+        kw.setdefault('progress', True)  # lest a long checkout time out
         return super(Git,self).step(*args, **kw)
 
 class GitHub(Git):
