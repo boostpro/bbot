@@ -57,7 +57,7 @@ class Git(Repository):
         return re.match('.*/(.*?)(?:.git)?$', self.url).group(1)
 
 class GitHub(Git):
-    def __init__(self, id, protocol='https'):
+    def __init__(self, id, protocol='http'):
         
         ## NOTE: do *not* add the .git suffix here; the repository
         ## that comes back from the GitHub service hook doesn't have
