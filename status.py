@@ -43,37 +43,37 @@ def MailNotifier(*args, **kw):
     return StatusFactory(mail.MailNotifier, *args, **kw)
 
 
+_url_pat = re.compile(r'(?:git@|(?:https?|git)://(?:[^@]+@)?)github.com[:/](.*?)(?:\.git)?$')
+
+def _revlink(sha, repo):
+    """
+    >>> _revlink('deadbeef', 'git@github.com:user/repo.git')
+    'http://github.com/user/repo/commit/deadbeef'
+    >>> _revlink('deadbeef', 'http://github.com/user/repo.git')
+    'http://github.com/user/repo/commit/deadbeef'
+    >>> _revlink('deadbeef', 'https://userid@github.com/user/repo.git')
+    'http://github.com/user/repo/commit/deadbeef'
+    >>> _revlink('deadbeef', 'git://github.com/boostpro/lazy_reload.git')
+    'http://github.com/boostpro/lazy_reload/commit/deadbeef'
+    >>> _revlink('deadbeef', 'git://github.com/boostpro/lazy_reload')
+    'http://github.com/boostpro/lazy_reload/commit/deadbeef'
+    >>> _revlink('deadbeef', 'https://github.com/ryppl/Boost.Defrag')
+    'http://github.com/ryppl/Boost.Defrag/commit/deadbeef'
+    """
+    m = _url_pat.match(repo)
+    if not m:
+        log.msg('GitHubWebStatus: unparseable url %r' % repo)
+        return 'unparseable:'+repo
+
+    return 'http://github.com/'+m.group(1)+'/commit/' + sha
+
 def GitHubWebStatus(authz=default_authz, *args, **kw):
     """Generates WebStatus specifically for github projects"""
-
-    url_pat = re.compile(r'(?:git@|(?:https?|git)://(?:[^@]+@))github.com[:/](.*?)(?:\.git)?')
-
-    def revlink(sha, repo):
-        """
-        >>> revlink('deadbeef', 'git@github.com:user/repo.git')
-        http://github.com/user/repo/commit/deadbeef
-        >>> revlink('deadbeef', 'http://github.com/user/repo.git')
-        http://github.com/user/repo/commit/deadbeef
-        >>> revlink('deadbeef', 'https://userid@github.com/user/repo.git')
-        http://github.com/user/repo/commit/deadbeef
-        >>> revlink('deadbeef', 'git://github.com/boostpro/lazy_reload.git')
-        http://github.com/user/repo/commit/deadbeef
-        >>> revlink('deadbeef', 'git://github.com/boostpro/lazy_reload')
-        http://github.com/user/repo/commit/deadbeef
-        >>> revlink('deadbeef', 'https://github.com/ryppl/Boost.Defrag'
-        http://github.com/ryppl/Boost.Defrag/commit/deadbeef
-        """
-        m = url_pat.match(repo)
-        if not m:
-            log.msg('GitHubWebStatus: unparseable url %r' % repo)
-            return 'unparseable:'+repo
-
-        return 'http://github.com/'+m.group(1)+'/commit/' + sha
 
     return WebStatus(*args, 
                       authz=authz,
                       order_console_by_time=True,
-                      revlink=revlink,
+                      revlink=_revlink,
                       change_hook_dialects={ 'github' : True },
                       **kw)
 
