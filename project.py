@@ -47,12 +47,12 @@ class Project(object):
         if make_change_filter:
             self.change_filter = make_change_filter(self)
         else:
-            self.change_filter = self.default_change_filter()
+            self.change_filter = self.__default_change_filter()
 
     def __str__(self):
         return 'Project %s (slaves=%s)' % (self.name,self.slaves)
 
-    def uses_slave(self, slave):
+    def __uses_slave(self, slave):
         """Predicate returning True iff the given slave is eligible for use by this Project"""
         return slave_property_match(slave, self.include_features, self.exclude_features)
 
@@ -60,14 +60,14 @@ class Project(object):
         """Given a list of all eligible slaves, select the ones on which this project will build"""
         self.__all_slaves = slaves
 
-    def default_change_filter(self, *args, **kw):
+    def __default_change_filter(self, *args, **kw):
         """The default change filter builds all changes in the given repositories"""
         return ChangeFilter(repository=[r.url for r in self.repositories], *args, **kw)
 
     @const_property
     def slaves(self):
         """A list of the slaves used by this project"""
-        return [s for s in self.__all_slaves if self.uses_slave(s)]
+        return [s for s in self.__all_slaves if self.__uses_slave(s)]
 
     @const_property
     def platforms(self):
