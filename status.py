@@ -62,7 +62,7 @@ def _revlink(sha, repo):
     """
     m = _url_pat.match(repo)
     if not m:
-        log.msg('GitHubWebStatus: unparseable url %r' % repo)
+        log.msg('GitHubWebStatus: unparseable url %r@%r' % (repo, sha))
         return 'unparseable:'+repo
 
     return 'http://github.com/'+m.group(1)+'/commit/' + sha
