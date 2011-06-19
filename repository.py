@@ -1,4 +1,5 @@
 import re
+import github
 
 repositories = {}
 
@@ -30,6 +31,10 @@ class Repository(object):
             else:
                 self.properties[p] = False
 
+    def match_url(self, url):
+        """Used for change filtering; True iff url identifies the same repository."""
+        return self.url == url
+
     def step(self, *args, **kw):
         return self.stepClass(repourl = self.url, *args, **kw)
 
@@ -57,17 +62,18 @@ class Git(Repository):
         return re.match('.*/(.*?)(?:.git)?$', self.url).group(1)
 
 class GitHub(Git):
+    protocols=dict(
+        git='git://github.com/%s',
+        http='http://github.com/%s',
+        https='https://github.com/%s',
+        ssh='git@github.com:%s',
+        )
+
     def __init__(self, id, protocol='http'):
         
-        ## NOTE: do *not* add the .git suffix here; the repository
-        ## that comes back from the GitHub service hook doesn't have
-        ## it.  Unless they match no builds will be triggered!
-        protocols=dict(
-            git='git://github.com/%s',
-            http='http://github.com/%s',
-            https='https://github.com/%s',
-            ssh='git@github.com:%s',
-            )
+        super(GitHub,self).__init__(GitHub.protocols[protocol] % id)
+        self.id = id
 
-        super(GitHub,self).__init__(protocols[protocol] % id)
-
+    def match_url(self, url):
+        m = github.url_pattern.match(url)
+        return m.group(1) == self.id

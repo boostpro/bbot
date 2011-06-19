@@ -62,7 +62,9 @@ class Project(object):
 
     def __default_change_filter(self, *args, **kw):
         """The default change filter builds all changes in the given repositories"""
-        return ChangeFilter(repository=[r.url for r in self.repositories], *args, **kw)
+        return ChangeFilter(
+            repository=lambda url: any(r.match_url(url) for r in self.repositories), 
+            *args, **kw)
 
     @const_property
     def slaves(self):

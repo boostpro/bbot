@@ -2,6 +2,7 @@ from buildbot.status import html
 from buildbot.status.web import authz
 from status_filter import *
 from twisted.python import log
+import github
 import re
 
 class StatusFactory(object):
@@ -43,8 +44,6 @@ def MailNotifier(*args, **kw):
     return StatusFactory(mail.MailNotifier, *args, **kw)
 
 
-_url_pat = re.compile(r'(?:git@|(?:https?|git)://(?:[^@]+@)?)github.com[:/](.*?)(?:\.git)?$')
-
 def _revlink(sha, repo):
     """
     >>> _revlink('deadbeef', 'git@github.com:user/repo.git')
@@ -60,7 +59,7 @@ def _revlink(sha, repo):
     >>> _revlink('deadbeef', 'https://github.com/ryppl/Boost.Defrag')
     'http://github.com/ryppl/Boost.Defrag/commit/deadbeef'
     """
-    m = _url_pat.match(repo)
+    m = github.url_pattern.match(repo)
     if not m:
         log.msg('GitHubWebStatus: unparseable url %r@%r' % (repo, sha))
         return 'unparseable:'+repo
