@@ -52,3 +52,42 @@ def flatten(iter):
     elements
     """
     return [x for x in chain(*[y for y in iter])]
+
+class AutoRepr(object):
+    """
+    
+    class X(AutoRepr):
+        def __init__(self, name):
+            self.name
+        def
+    """
+    def __repr__(self):
+        f = getattr(self.__class__, '__getnewargs__', None
+                    ) or getattr(self.__class__, '__getinitargs__', None)
+        if f:
+            return self.__class__.__name__ + '(' + ', '.join(repr(x) for x in f(self)) + ')' 
+        else:
+            return object.__repr__(self)
+    
+    
+if __name__ == '__main__':
+    class X(AutoRepr):
+        def __init__(self, name):
+            self.name = name
+        def __getinitargs__(self):
+            return (self.name,)
+
+    class Y(X):
+        def __init__(self,num,name):
+            X.__init__(self, name)
+
+        def __new__(cls, num, name):
+            ret = X.__new__(cls)
+            ret.num = num
+            return ret
+
+        def __getnewargs__(self):
+            return (self.num, self.name)
+
+    assert repr(X('foo')) == "X('foo')"
+    assert repr(Y(3, 'foo')) == "Y(3, 'foo')"

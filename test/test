@@ -8,7 +8,7 @@
 set -e
 export PATH="~/.virtualenvs/bb/bin:$PATH"
 
-for x in memoize platform procedures slave status ; do
+for x in memoize platform procedures slave status util ; do
     python ../$x.py
 done
 
