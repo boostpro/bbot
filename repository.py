@@ -80,7 +80,8 @@ class GitHub(Git):
 
     def match_url(self, url):
         from twisted.python import log
-        log.msg('GitHub(%r) matching %r' % (self.url, url))
         m = github.url_pattern.match(url)
-        log.msg('GitHub(%r) matched %r' % (self.url, m and m.group(1)))
-        return m.group(1) == self.id
+        log.msg('GitHub(%r) matching %r against %r...' % (self.url, m and m.group(1), self.id))
+        ret = m.group(1) == self.id
+        log.msg('...%s' % ret)
+        return ret
