@@ -73,6 +73,10 @@ class GitHub(Git):
         
         super(GitHub,self).__init__(GitHub.protocols[protocol] % id)
         self.id = id
+        self.protocol = protocol
+
+    def __repr__(self):
+        return self.__class__.__module__ + '.' + self.__class__.__name__+repr((self.id,self.protocol))
 
     def match_url(self, url):
         from twisted.python import log
