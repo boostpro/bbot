@@ -1,8 +1,13 @@
-from buildbot.scheduler import AnyBranchScheduler
+from buildbot import scheduler
 from buildbot.schedulers.filter import ChangeFilter
 from buildbot.config import BuilderConfig
 from memoize import memoize, const_property
 import util
+
+class AnyBranchScheduler(scheduler.AnyBranchScheduler):
+    def __repr__(self):
+        import pprint
+        return 'AnyBranchScheduler %r=' % self.name + pprint.pformat(self.__dict__)
 
 class multimap(dict):
     """
@@ -60,10 +65,15 @@ class Project(object):
         """Given a list of all eligible slaves, select the ones on which this project will build"""
         self.__all_slaves = slaves
 
+    def __match_any_repository(self, url):
+        from twisted.python import log
+        log.msg('__match_any_repository: %r in %r' % (url,self.repositories))
+        return any(r.match_url(url) for r in self.repositories), 
+
     def __default_change_filter(self, *args, **kw):
         """The default change filter builds all changes in the given repositories"""
         return ChangeFilter(
-            repository=lambda url: any(r.match_url(url) for r in self.repositories), 
+            repository=self.__match_any_repository,
             *args, **kw)
 
     @const_property
