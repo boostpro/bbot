@@ -66,12 +66,7 @@ class Project(object):
         self.__all_slaves = slaves
 
     def __match_any_repository(self, url):
-        from twisted.python import log
-        log.msg('__match_any_repository: %r in %r...' % (url,self.repositories))
-        matched = (r.match_url(url) for r in self.repositories)
-        log.msg('   ...%r...' % matched)
-        log.msg('   => %r' % any(matched))
-        return any(matched)
+        return any(r.match_url(url) for r in self.repositories)
 
     def __default_change_filter(self, *args, **kw):
         """The default change filter builds all changes in the given repositories"""
