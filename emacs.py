@@ -7,7 +7,7 @@ from buildbot.process.properties import WithProperties
 def Emacs():
     return WithProperties(
         '%(EMACS)s'
-        , EMACS=lambda props: props.getProperty('EMACS','emacs')
+        , EMACS=lambda build: build.getProperties().getProperty('EMACS','emacs')
         )
 
 def EmacsTest(*args, **kw):
