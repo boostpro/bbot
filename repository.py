@@ -51,8 +51,28 @@ class Git(Repository):
 
     def steps(self, *args, **kw):
         kw.setdefault('submodules', True)
-        return super(Git,self).step(*args, **kw)
+        return self.buildbot_issue_2002_workaround(*args,**kw) + super(Git,self).steps(*args, **kw)
+        
 
+    def buildbot_issue_2002_workaround(self, *args, **kw):
+        from buildbot.steps.shell import ShellCommand
+        return [
+            ShellCommand(
+                name='BuildBot Ticket #2002 Workaround Step 1',
+                command='mkdir %s && rmdir %s && git clone %s' % (self.name,self.name,self.url),
+                flunkOnFailure=False,
+                haltOnFailure=False,
+                description='cloning',
+                descriptionDone='cloned'),
+            ShellCommand(
+                name='BuildBot Ticket #2002 Workaround Step 2',
+                command= ['git', 'fetch', self.url],
+                flunkOnFailure=True,
+                haltOnFailure=True,
+                workdir=self.name,
+                description='fetching',
+                descriptionDone='fetched') ]
+                
     @property
     def name(self):
         """
