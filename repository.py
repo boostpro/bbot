@@ -35,8 +35,8 @@ class Repository(object):
         """Used for change filtering; True iff url identifies the same repository."""
         return self.url == url
 
-    def step(self, *args, **kw):
-        return self.stepClass(repourl = self.url, *args, **kw)
+    def steps(self, *args, **kw):
+        return [ self.stepClass(repourl = self.url, *args, **kw) ]
 
 
 import buildbot.steps.source
@@ -49,9 +49,8 @@ class Git(Repository):
     """
     stepClass = buildbot.steps.source.Git
 
-    def step(self, *args, **kw):
+    def steps(self, *args, **kw):
         kw.setdefault('submodules', True)
-        kw.setdefault('progress', True)  # lest a long checkout time out
         return super(Git,self).step(*args, **kw)
 
     @property
