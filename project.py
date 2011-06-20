@@ -73,7 +73,7 @@ class Project(object):
     def __default_change_filter(self, *args, **kw):
         """The default change filter builds all changes in the given repositories"""
         return ChangeFilter(
-            repository=self.__match_any_repository,
+            repository_fn=self.__match_any_repository,
             *args, **kw)
 
     @const_property
