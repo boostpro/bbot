@@ -66,10 +66,9 @@ class Git(Repository):
                 descriptionDone='cloned'),
             ShellCommand(
                 name='BuildBot Ticket #2002 Workaround Step 2',
-                command= ['git', 'fetch', self.url],
+                command='cd %s && git fetch %s' % (self.name,self.url),
                 flunkOnFailure=True,
                 haltOnFailure=True,
-                workdir=self.name,
                 description='fetching',
                 descriptionDone='fetched') ]
                 
