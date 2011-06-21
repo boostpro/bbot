@@ -59,6 +59,7 @@ class Git(Repository):
         return [
             ShellCommand(
                 name='BuildBot Ticket #2002 Workaround Step 1',
+                workdir='..',
                 command='mkdir %s && rmdir %s && git clone %s' % (self.name,self.name,self.url),
                 flunkOnFailure=False,
                 haltOnFailure=False,
@@ -66,6 +67,7 @@ class Git(Repository):
                 descriptionDone='cloned'),
             ShellCommand(
                 name='BuildBot Ticket #2002 Workaround Step 2',
+                workdir='..',
                 command='cd %s && git fetch %s' % (self.name,self.url),
                 flunkOnFailure=True,
                 haltOnFailure=True,
