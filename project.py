@@ -1,5 +1,5 @@
 from buildbot import scheduler
-from buildbot.schedulers.filter import ChangeFilter
+from buildbot.schedulers.filter import ChangeFilter as BaseChangeFilter
 from buildbot.config import BuilderConfig
 from memoize import memoize, const_property
 import util
@@ -52,7 +52,7 @@ class Project(object):
         if make_change_filter:
             self.change_filter = make_change_filter(self)
         else:
-            self.change_filter = self.__default_change_filter()
+            self.change_filter = self.ChangeFilter()
 
     def __str__(self):
         return 'Project %s (slaves=%s)' % (self.name,self.slaves)
@@ -68,9 +68,9 @@ class Project(object):
     def __match_any_repository(self, url):
         return any(r.match_url(url) for r in self.repositories)
 
-    def __default_change_filter(self, *args, **kw):
+    def ChangeFilter(self, *args, **kw):
         """The default change filter builds all changes in the given repositories"""
-        return ChangeFilter(
+        return BaseChangeFilter(
             repository_fn=self.__match_any_repository,
             *args, **kw)
 
