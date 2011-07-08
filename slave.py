@@ -5,8 +5,22 @@ from platform import Platform
 
 class Slave(BuildSlave):
     """
+    A BuildSlave that can be initialized with a password after
+    its initial construction.
     """
     def __init__(self, name, password=None, features={}, *args, **kw):
+        """
+        @type  name: string
+        @param name: name given to BuildSlave
+
+        @type  password: string or None
+        @param password: buildslave password
+
+        @type  features: dict mapping strings to strings or lists of strings
+        @param features: Properties of this slave
+
+        Additional arguments are passed on to the BuildSlave we construct
+        """
         self.__name = name
         self.__password = password
         self.__args = args
