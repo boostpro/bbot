@@ -32,13 +32,13 @@ class Slave(BuildSlave):
 
         >>> s = Slave('foo', None, features=dict( a=(1, 2, 3), b=4, c=(5,6) ))
         >>> s.platforms(('a',))
-        [Platform((('a', 1),)), Platform((('a', 2),)), Platform((('a', 3),))]
+        [Platform({'a': 1}), Platform({'a': 2}), Platform({'a': 3})]
         >>> s.platforms(('b',))
-        [Platform((('b', 4),))]
+        [Platform({'b': 4})]
         >>> s.platforms(('a','b'))
-        [Platform((('a', 1), ('b', 4))), Platform((('a', 2), ('b', 4))), Platform((('a', 3), ('b', 4)))]
+        [Platform({'a': 1, 'b': 4}), Platform({'a': 2, 'b': 4}), Platform({'a': 3, 'b': 4})]
         >>> s.platforms(('a', 'c'))
-        [Platform((('a', 1), ('c', 5))), Platform((('a', 1), ('c', 6))), Platform((('a', 2), ('c', 5))), Platform((('a', 2), ('c', 6))), Platform((('a', 3), ('c', 5))), Platform((('a', 3), ('c', 6)))]
+        [Platform({'a': 1, 'c': 5}), Platform({'a': 1, 'c': 6}), Platform({'a': 2, 'c': 5}), Platform({'a': 2, 'c': 6}), Platform({'a': 3, 'c': 5}), Platform({'a': 3, 'c': 6})]
         >>> s.platforms(('d'))
         []
         """
