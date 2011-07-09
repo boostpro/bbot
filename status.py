@@ -2,8 +2,8 @@ from buildbot.status import html
 from buildbot.status.web import authz
 from status_filter import *
 from twisted.python import log
-import github
-import re
+
+import re, git
 
 class StatusFactory(object):
     """
@@ -59,12 +59,9 @@ def _revlink(sha, repo):
     >>> _revlink('deadbeef', 'https://github.com/ryppl/Boost.Defrag')
     'http://github.com/ryppl/Boost.Defrag/commit/deadbeef'
     """
-    m = github.url_pattern.match(repo)
-    if not m:
-        log.msg('GitHubWebStatus: unparseable url %r@%r' % (repo, sha))
-        return 'unparseable:'+repo
+    scheme,hostname,path,userpass = git.split_url(repo)
 
-    return 'http://github.com/'+m.group(1)+'/commit/' + sha
+    return 'http://github.com'+path+'/commit/' + sha
 
 def GitHubWebStatus(authz=default_authz, *args, **kw):
     """Generates WebStatus specifically for github projects"""

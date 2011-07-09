@@ -1,5 +1,5 @@
-import re
-import github
+import re, git
+import buildbot.steps.source
 
 repositories = {}
 
@@ -39,7 +39,13 @@ class Repository(object):
         return [ self.stepClass(repourl = self.url, *args, **kw) ]
 
 
-import buildbot.steps.source
+class GitStep(buildbot.steps.source.Git):
+    def computeSourceRevision(self, changes):
+        if changes:
+            for c in list(changes).reversed():
+                if git.probably_same_repo(c.repository, self.repourl):
+                    return c.revision
+        return None
 
 class Git(Repository):
     """
@@ -47,7 +53,7 @@ class Git(Repository):
     consider submodules by default.  Seriously, who wants to ignore
     submodules?
     """
-    stepClass = buildbot.steps.source.Git
+    stepClass = GitStep
 
     def steps(self, *args, **kw):
         kw.setdefault('submodules', True)
@@ -75,12 +81,8 @@ class GitHub(Git):
         self.protocol = protocol
 
     def __repr__(self):
-        return self.__class__.__module__ + '.' + self.__class__.__name__+repr((self.id,self.protocol))
+        return self.__class__.__module__ + '.' \
+            + self.__class__.__name__+repr((self.id,self.protocol))
 
     def match_url(self, url):
-        from twisted.python import log
-        m = github.url_pattern.match(url)
-        log.msg('GitHub(%r) matching %r against %r...' % (self.url, m and m.group(1), self.id))
-        ret = m.group(1) == self.id
-        log.msg('...%s' % ret)
-        return ret
+        return git.probably_same_repo(self.url,url)
