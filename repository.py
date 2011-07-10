@@ -1,5 +1,6 @@
 import re, git
 import buildbot.steps.source
+from twisted.python import log
 
 repositories = {}
 
@@ -43,7 +44,9 @@ class GitStep(buildbot.steps.source.Git):
     def computeSourceRevision(self, changes):
         if changes:
             for c in list(changes).reversed():
+                log.msg('checking repo match: %s/%s' % (c.repository, self.repourl))
                 if git.probably_same_repo(c.repository, self.repourl):
+                    log.msg('MATCHED')
                     return c.revision
         return None
 
