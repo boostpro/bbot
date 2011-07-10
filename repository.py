@@ -56,7 +56,7 @@ class Git(Repository):
     consider submodules by default.  Seriously, who wants to ignore
     submodules?
     """
-    stepClass = GitStep
+    stepClass = git.SourceStep
 
     def steps(self, *args, **kw):
         kw.setdefault('submodules', True)

@@ -1,4 +1,5 @@
 import re
+from buildbot.steps.source import Git
 
 from urlparse import urlsplit
 
@@ -84,6 +85,22 @@ def probably_same_repo(url1, url2):
     True
     """
     return split_url(url1)[1:-1] == split_url(url2)[1:-1]
+
+class SourceStep(Git):
+    def repo_changed(self):
+        return probably_same_repo(self.build.getSourceStamp().repository, self.repourl)
+
+    def startVC(self, branch, revision, patch):
+        if not self.repo_changed():
+            branch,revision,patch = self.branch, None, None
+        return Git.startVC(self, branch, revision, patch)
+
+    def commandComplete(self, cmd):
+        if self.repo_changed():
+            # This is where the got_revision property gets set in the
+            # buildbot Source step.  Only capture that if we're
+            # working on the same repository.
+            Git.commandComplete(self, cmd)
 
 if __name__ == '__main__':
     import doctest
