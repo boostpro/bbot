@@ -84,6 +84,10 @@ def probably_same_repo(url1, url2):
     ...    'git://github.com/boostpro/bbot.git', 
     ...    'http://github.com/boostpro/bbot')
     True
+    >>> probably_same_repo(
+    ...    'git@domain.com:foo.git',
+    ...    'git@domain.com:bar.git')
+    False
     """
     return split_url(url1)[1:-1] == split_url(url2)[1:-1]
 
