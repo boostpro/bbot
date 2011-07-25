@@ -66,7 +66,8 @@ def probably_same_repo(url1, url2):
     """
     return True iff url1 and url2 probably refer to the same Git repository.
 
-    See the multiple ways of 
+    See the multiple ways of referring to a repository provided by
+    GitHub for the convention implemented here.
 
     Of course it's always possible for a given server to violate these
     conventions, but that would be perverse.
