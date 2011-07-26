@@ -5,27 +5,34 @@ def _import(module_name):
     __import__(module_name)
     return sys.modules[module_name]
 
-def load_submodules(parent_module_name):
+def submodules(parent, recurse=False):
     """
-    import and return a list of all submodules of the named module
+    A generator for the names of all submodules of parent
     """
-    parent = _import(parent_module_name)
+    parent_name = parent.__name__
     pdir = os.path.dirname(parent.__file__)
-
-    ret = []
 
     for x in os.listdir(pdir):
         submodule_name = None
         if not os.path.isdir(os.path.join(pdir, x)) and x.endswith('.py') and x != '__init__.py':
-            submodule_name = os.path.splitext(x)[0]
-        elif os.path.exists(os.path.join(pdir, x, '__init__.py')):
-            submodule_name = x
-        else:
-            continue
-        
-        ret.append(_import(parent_module_name+'.'+submodule_name))
+            yield parent_name+'.'+os.path.splitext(x)[0]
 
-    return ret
+        elif os.path.exists(os.path.join(pdir, x, '__init__.py')):
+            submodule_name = parent_name+'.'+x
+            yield submodule_name
+
+            if recurse:
+                for s in submodules(_import(submodule_name), recurse):
+                    yield s
+
+def load_submodules(parent_name, recurse=False):
+    """
+    import and return an iterator over all submodules of the named module
+    """
+    parent = _import(parent_name)
+
+    for s in submodules(parent, recurse=recurse):
+        yield _import(s)
 
 def init_from_module(klass, m):
     """
