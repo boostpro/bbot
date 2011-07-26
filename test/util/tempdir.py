@@ -3,27 +3,37 @@ import shutil
 import path
 import os
 
-class TempDir(object):
-    path = None
-    def __init__(self, *args, **kw):
+class TempDir(path.Path):
+    def __new__(cls, *args, **kw):
         '''
         >>> d = TempDir()
-        >>> os.path.isdir(d.path)
+        >>> os.path.isdir(d)
         True
         '''
-        self.path = path.Path(tempfile.mkdtemp(*args, **kw))
+        d = tempfile.mkdtemp(*args, **kw)
+        try:
+            return super(TempDir,cls).__new__(cls, d)
+        except:
+            shutil.rmtree(d, ignore_errors=True)
+            raise
 
-    def __str__(self):
-        return self.path
-        
+    @property
+    def path(self):
+        '''
+        >>> d = TempDir()
+        >>> d.path == d
+        True
+        '''
+        return path.Path(self)
+            
     def __del__(self):
         '''
         >>> d = TempDir()
-        >>> p = d.path
-        >>> f = p / 'foo'
+        >>> f = d / 'foo'
         >>> _ = open(f, 'w')
         >>> os.path.exists(f)
         True
+        >>> p = str(d)
         >>> del d
         >>> os.path.exists(p)
         False
