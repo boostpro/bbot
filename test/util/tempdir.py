@@ -1,6 +1,7 @@
 import tempfile
 import shutil
 import path
+import os
 
 class TempDir(object):
     path = None
