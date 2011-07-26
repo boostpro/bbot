@@ -36,11 +36,24 @@ class LocalGit(TempDir):
     def __init__(self, *args, **kw):
         '''
         >>> r = LocalGit()
-        >>> subprocess.call(['git','status'], cwd=r.path)
-        0
+        >>> subprocess.call(['git','status'], cwd=r.path) or None
         '''
         super(LocalGit, self).__init__(*args, **kw)
         subprocess.check_call(['git','init'], cwd=self.path)
+
+    def add(self, relpath='.'):
+        '''
+        >>> from subprocess import *
+        >>> r = LocalGit()
+        >>> open(r.path/'README','w').close()
+        >>> r.add('README')
+        >>> rev = Popen(['git','rev-parse', 'HEAD'], stdout=PIPE, stderr=None, cwd=r.path).stdout.read()
+        >>> check_call(['git','commit', '-m', 'comment'], cwd=r.path) or None
+        >>> rev == Popen(['git','rev-parse', 'HEAD'], stdout=PIPE, cwd=r.path).stdout.read()
+        False
+        '''
+        subprocess.check_call(['git','add', relpath], cwd=self.path)
+        
         
 
 if __name__ == '__main__':
