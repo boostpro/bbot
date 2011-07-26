@@ -1,6 +1,6 @@
 import tempfile
 import shutil
-import subprocess
+import quiet_process
 import os
 import path
 
@@ -36,25 +36,26 @@ class LocalGit(TempDir):
     def __init__(self, *args, **kw):
         '''
         >>> r = LocalGit()
-        >>> subprocess.call(['git','status'], cwd=r.path) or None
+        >>> quiet_process.call(['git','status'], cwd=r.path)
+        0
         '''
         super(LocalGit, self).__init__(*args, **kw)
-        subprocess.check_call(['git','init'], cwd=self.path)
+        quiet_process.check_call(['git','init'], cwd=self.path)
 
     def add(self, relpath='.'):
         '''
-        >>> from subprocess import *
+        >>> from quiet_process import *
         >>> r = LocalGit()
         >>> open(r.path/'README','w').close()
         >>> r.add('README')
-        >>> rev = Popen(['git','rev-parse', 'HEAD'], stdout=PIPE, stderr=None, cwd=r.path).stdout.read()
-        >>> check_call(['git','commit', '-m', 'comment'], cwd=r.path) or None
-        >>> rev == Popen(['git','rev-parse', 'HEAD'], stdout=PIPE, cwd=r.path).stdout.read()
+        >>> call(['git','rev-parse', 'HEAD'], cwd=r.path) == 0
         False
+        >>> check_call(['git','commit', '-m', 'comment'], cwd=r.path)
+        0
+        >>> check_call(['git','rev-parse', 'HEAD'], cwd=r.path)
+        0
         '''
-        subprocess.check_call(['git','add', relpath], cwd=self.path)
-        
-        
+        quiet_process.check_call(['git','add', relpath], cwd=self.path)
 
 if __name__ == '__main__':
     import doctest
