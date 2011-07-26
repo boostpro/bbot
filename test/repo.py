@@ -9,7 +9,7 @@ class LocalGit(tempdir.TempDir):
         0
         '''
         super(LocalGit, self).__init__(*args, **kw)
-        quiet_process.check_call(['git','init'], cwd=self.path)
+        self.check_call(['git','init'])
 
     def add(self, relpath='.'):
         '''
@@ -24,8 +24,12 @@ class LocalGit(tempdir.TempDir):
         >>> check_call(['git','rev-parse', 'HEAD'], cwd=r.path)
         0
         '''
-        quiet_process.check_call(['git','add', relpath], cwd=self.path)
+        self.check_call(['git','add', relpath])
         
+    def check_call(self, *args, **kw):
+        return quiet_process.check_call(
+            *args, **dict(kw, cwd=kw.get('cwd',self.path)))
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
