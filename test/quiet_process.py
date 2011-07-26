@@ -14,7 +14,9 @@ def call(*args, **kw):
     return _call(*args, **_quiet_args(kw))
 
 def check_call(*args, **kw):
-    return _check_call(*args, **_quiet_args(kw))
+    # intentionally don't return anything.  _check_call throws if the
+    # result would be nonzero, so the return value is meaningless
+    _check_call(*args, **_quiet_args(kw))
 
 try:
     from subprocess import check_output as _check_output
