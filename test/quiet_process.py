@@ -7,7 +7,7 @@ def _quiet_args(kwargs):
         stderr=kwargs.get('stderr', PIPE))
 
 class Popen(_Popen):
-    def __init__(*args, **kw):
+    def __init__(self, *args, **kw):
         super(Popen,self).__init__(*args, **_quiet_args(kw))
 
 def call(*args, **kw):
@@ -34,5 +34,5 @@ except:
         return output
 else:
     def check_output(*args, **kw):
-        _check_output(*args, **dict(kw, stderr=kw.get('stderr', PIPE)))
+        return _check_output(*args, **dict(kw, stderr=kw.get('stderr', PIPE)))
                            
