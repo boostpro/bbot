@@ -8,11 +8,6 @@
 set -e
 export PATH="~/.virtualenvs/bb/bin:$PATH"
 
-# Run all the doctests
-for x in $(grep -l 'doctest\.testmod' *.py ../*.py) ; do
-    python $x
-done
-
 buildbot checkconfig
 buildbot create-master
 
