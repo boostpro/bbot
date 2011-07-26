@@ -1,8 +1,8 @@
-from bbot_test import bbot
-from bbot_test.bbot.repository import GitHub
-from bbot_test.bbot.project import Project
-from bbot_test.bbot.slave import Slave
-from bbot_test.bbot.procedures import BuildProcedure
+import bbot
+from bbot.repository import GitHub
+from bbot.project import Project
+from bbot.slave import Slave
+from bbot.procedures import BuildProcedure
 
 BuildmasterConfig = bbot.master(
     title = 'bbot-test-site', 
