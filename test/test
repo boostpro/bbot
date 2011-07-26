@@ -8,8 +8,9 @@
 set -e
 export PATH="~/.virtualenvs/bb/bin:$PATH"
 
-for x in memoize platform procedures slave status util git ; do
-    python ../$x.py
+# Run all the doctests
+for x in $(grep -l 'doctest\.testmod' ../*.py) ; do
+    python $x
 done
 
 buildbot checkconfig
