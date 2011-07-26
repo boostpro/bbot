@@ -32,6 +32,17 @@ class TempDir(object):
         if self.path:
             shutil.rmtree(self.path, ignore_errors=True)
 
+class LocalGit(TempDir):
+    def __init__(self, *args, **kw):
+        '''
+        >>> r = LocalGit()
+        >>> subprocess.call(['git','status'], cwd=r.path)
+        0
+        '''
+        super(LocalGit, self).__init__(*args, **kw)
+        subprocess.check_call(['git','init'], cwd=self.path)
+        
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
