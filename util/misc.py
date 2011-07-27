@@ -62,11 +62,15 @@ def flatten(iter):
 
 class AutoRepr(object):
     """
-    
-    class X(AutoRepr):
-        def __init__(self, name):
-            self.name
-        def
+    >>> class X(AutoRepr):
+    ...     def __init__(self, val):
+    ...         self.val = val
+    ...     def __getinitargs__(self):
+    ...         return (self.val,)
+    ...
+    >>> r = repr(X(123))
+    >>> r[r.rfind('X('):]
+    'X(123)'
     """
     def __repr__(self):
         f = getattr(self.__class__, '__getnewargs__', None
