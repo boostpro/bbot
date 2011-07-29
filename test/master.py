@@ -6,6 +6,7 @@ if _bbot_parent_dir not in sys.path:
     sys.path.insert(0, _bbot_parent_dir)
 
 import bbot
+import bbot.util.quiet_process as quietly
 from bbot.util.tempdir import TempDir
 
 def _link_or_copy(src, dst):
@@ -81,3 +82,12 @@ class BuildMaster(object):
         nontrivial configuration.
         """
         return self.trivial_config_py_template % dict(name=self.name)
+
+    def check_cmd(self, *popenargs, **kwargs):
+        cmd = kwargs.pop('args', None)
+        if cmd is None:
+            cmd = popenargs[0]
+            popenargs = popenargs[1:]
+        cwd = kwargs.pop('cwd', self.bot_dir)
+
+        quietly.check_call(*popenargs, args=['buildbot']+cmd, env = self.environ, cwd=cwd, **kwargs)

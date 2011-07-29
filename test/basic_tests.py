@@ -18,26 +18,26 @@ class non_running_test(TrivialMaster):
     cmd = ['buildbot', 'checkconfig']
 
     def test_checkconfig_in_src_dir(self):
-        check_call(self.cmd, cwd=self.src_dir, env = self.environ)
+        self.check_cmd(['checkconfig'], cwd=self.src_dir)
 
     def test_checkconfig_in_bot_dir(self):
-        check_call(self.cmd, cwd=self.bot_dir, env = self.environ)
+        self.check_cmd(['checkconfig'])
 
     def test_create_master(self):
-        check_call(['buildbot', 'create-master'], cwd=self.bot_dir, env = self.environ)
+        self.check_cmd(['create-master'])
 
 class RunningMaster(BuildMaster):
     def setUp(self):
         super(RunningMaster,self).setUp()
-        check_call(['buildbot', 'create-master'], cwd=self.bot_dir, env = self.environ)
-        check_call(['buildbot', 'start'], cwd=self.bot_dir, env = self.environ)
+        self.check_cmd(['create-master'])
+        self.check_cmd(['start'])
 
     def tearDown(self):
-        check_call(['buildbot', 'stop'], cwd=self.bot_dir, env = self.environ)
+        self.check_cmd(['stop'])
         super(RunningMaster,self).tearDown()
 
 class trivial_run_test(TrivialMaster, RunningMaster):
     def test_reconfig(self):
-        check_call(['buildbot', 'reconfig'], cwd=self.bot_dir, env = self.environ)
+        self.check_cmd(['reconfig'])
     def test_stop(self):
-        check_call(['buildbot', 'stop'], cwd=self.bot_dir, env = self.environ)
+        self.check_cmd(['stop'])
