@@ -23,37 +23,12 @@ class BuildMaster(object):
     Represents a BuildMaster installation
     """
 
-    master_cfg_template = """# -*- python -*-
-# ex: set syntax=python:
+    def _load_template(name):
+        return open(os.path.join(pdir(__file__),name+'.template')).read()
 
-# This file is boilerplate.
-#
-import os, sys, lazy_reload
+    master_cfg_template = _load_template('master.cfg')
+    trivial_config_py_template = _load_template('trivial-config.py')
 
-lazy_reload.lazy_reload(%(name)r)
-
-# When buildbot checkconfig is invoked from the root directory of the
-# project (as opposed to its parent), we need to amend the path so
-# this module can be found.
-try:
-    import %(name)s
-except ImportError:
-    sys.path[-1] = os.path.dirname(sys.path[-1])
-
-# All the real work gets done in config.py
-from %(name)s.config import *
-"""
-
-    trivial_config_py_template = """
-import bbot
-
-BuildmasterConfig = bbot.master(
-    title = '%(name)s',
-    buildbotURL = 'http://trac.buildbot.net',
-    slaves = [],
-    projects = []
-)
-"""
     environ = dict(
         os.environ.items()
         + [('PYTHONPATH',pdir(pdir(bbot.__file__)))])

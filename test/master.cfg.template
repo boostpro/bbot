@@ -1,0 +1,19 @@
+# -*- python -*-
+# ex: set syntax=python:
+
+# This file is boilerplate.
+#
+import os, sys, lazy_reload
+
+lazy_reload.lazy_reload(%(name)r)
+
+# When buildbot checkconfig is invoked from the root directory of the
+# project (as opposed to its parent), we need to amend the path so
+# this module can be found.
+try:
+    import %(name)s
+except ImportError:
+    sys.path[-1] = os.path.dirname(sys.path[-1])
+
+# All the real work gets done in config.py
+from %(name)s.config import *

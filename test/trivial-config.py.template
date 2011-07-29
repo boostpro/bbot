@@ -1,0 +1,10 @@
+# -*- python -*-
+# ex: set syntax=python:
+import bbot
+
+BuildmasterConfig = bbot.master(
+    title = '%(name)s',
+    buildbotURL = 'http://trac.buildbot.net',
+    slaves = [],
+    projects = []
+)
