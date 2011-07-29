@@ -4,6 +4,9 @@ import path
 import os
 
 class TempDir(path.Path):
+
+    __preserved = False
+
     def __new__(cls, *args, **kw):
         '''
         >>> d = TempDir()
@@ -25,6 +28,12 @@ class TempDir(path.Path):
         True
         '''
         return path.Path(self)
+
+    def preserve(self):
+        """
+        Disable the final cleanup action.
+        """
+        self.__preserved = True
             
     def __del__(self):
         '''
@@ -38,7 +47,7 @@ class TempDir(path.Path):
         >>> os.path.exists(p)
         False
         '''
-        if self.path:
+        if not self.__preserved:
             shutil.rmtree(self.path, ignore_errors=True)
 
 if __name__ == '__main__':
