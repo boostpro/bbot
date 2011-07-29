@@ -15,8 +15,6 @@ import %(name)s
 
 
 class non_running_test(TrivialMaster):
-    cmd = ['buildbot', 'checkconfig']
-
     def test_checkconfig_in_src_dir(self):
         self.check_cmd(['checkconfig'], cwd=self.src_dir)
 
