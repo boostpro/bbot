@@ -7,8 +7,12 @@ def _import(module_name):
 
 def submodules(parent, recurse=False):
     """
-    A generator for the names of all submodules of parent
+    A generator for the names of all submodules of parent.
+
+    If recurse is True, will import the submodules in an attempt to
+    find sub-sub-modules
     """
+    # TODO: consider using imp.find_module to avoid eager importing
     parent_name = parent.__name__
     pdir = os.path.dirname(parent.__file__)
 
@@ -27,7 +31,8 @@ def submodules(parent, recurse=False):
 
 def load_submodules(parent_name, recurse=False):
     """
-    import and return an iterator over all submodules of the named module
+    An iterator that imports on demand (and yields) all submodules of
+    the named module.
     """
     parent = _import(parent_name)
 
