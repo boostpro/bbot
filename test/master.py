@@ -59,34 +59,50 @@ BuildmasterConfig = bbot.master(
         + [('PYTHONPATH',pdir(pdir(bbot.__file__)))])
 
     name = None
-    parent_dir = None
-    cfg_dir = None
+
+    bot_dir = None
+    """Path to the directory where "buildbot create-master" gets run"""
+    
+    src_dir = None
+    """Path to the directory containing the configuration source files"""
 
     def __init__(self, name = 'buildmaster'):
         self.name = name
 
     def setUp(self):
-        self.parent_dir = TempDir()
-        self.cfg_dir = self.parent_dir / self.name
-        os.mkdir(self.cfg_dir)
+        """
+        Prepare a temporary directory containing all the basics
+        """
+        self.bot_dir = TempDir()
 
-        master_cfg = self.cfg_dir/'master.cfg'
+        # Create a submodule
+        self.src_dir = self.bot_dir / self.name
+        os.mkdir(self.src_dir)
+        open(self.src_dir/'__init__.py', 'w')
+
+
+        # Create the master.cfg file
+        master_cfg = self.src_dir/'master.cfg'
         open(master_cfg, 'w').write(
             self.master_cfg_template % dict(name=self.name))
         
-        _link_or_copy(master_cfg, self.parent_dir/'master.cfg')
+        # Add a link to master.cfg in the bot directory
+        _link_or_copy(master_cfg, self.bot_dir/'master.cfg')
 
-        open(self.cfg_dir/'__init__.py', 'w')
-
-        open(self.cfg_dir/'config.py', 'w').write(
+        # Generate config.py
+        open(self.src_dir/'config.py', 'w').write(
             self.gen_config_py())
         
     def tearDown(self):
-        del self.parent_dir
+        """
+        Make sure the temporary directory is cleaned up.
+        """
+        del self.bot_dir
 
     def gen_config_py(self):
         """
         Return a string representing the contents of the buildmaster's
-        config.py file.
+        config.py file.  Override this method if you want to test a
+        nontrivial configuration.
         """
         return self.trivial_config_py_template % dict(name=self.name)
