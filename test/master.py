@@ -1,5 +1,5 @@
 import os, sys, shutil
-from os.path import dirname as pdir
+from os.path import dirname as pdir, join as pjoin
 
 _bbot_parent_dir = pdir(pdir(pdir(__file__)))
 if _bbot_parent_dir not in sys.path:
@@ -28,7 +28,7 @@ class BuildMaster(object):
     # constants
     #
     def _load_template(name):
-        return open(os.path.join(pdir(__file__),name+'.template')).read()
+        return open(pjoin(pdir(__file__),name+'.template')).read()
 
     master_cfg_template = _load_template('master.cfg')
     trivial_config_py_template = _load_template('trivial-config.py')
