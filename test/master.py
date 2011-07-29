@@ -24,6 +24,9 @@ class BuildMaster(object):
     Represents a BuildMaster installation
     """
 
+    #
+    # constants
+    #
     def _load_template(name):
         return open(os.path.join(pdir(__file__),name+'.template')).read()
 
@@ -34,7 +37,11 @@ class BuildMaster(object):
         os.environ.items()
         + [('PYTHONPATH',pdir(pdir(bbot.__file__)))])
 
+    #
+    # instance attributes
+    #
     name = None
+    """Name of the directory where the configuration sourcec lives"""
 
     bot_dir = None
     """Path to the directory where "buildbot create-master" gets run"""
