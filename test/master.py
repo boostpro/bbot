@@ -21,7 +21,7 @@ def _link_or_copy(src, dst):
 
 class BuildMaster(object):
     """
-    Represents a BuildMaster installation
+    Represents a test of a BuildMaster installation
     """
 
     #
@@ -98,3 +98,13 @@ class BuildMaster(object):
         cwd = kwargs.pop('cwd', self.bot_dir)
 
         quietly.check_call(*popenargs, args=['buildbot']+cmd, env = self.environ, cwd=cwd, **kwargs)
+
+class RunningMaster(BuildMaster):
+    def setUp(self):
+        super(RunningMaster,self).setUp()
+        self.check_cmd(['create-master'])
+        self.check_cmd(['start'])
+
+    def tearDown(self):
+        self.check_cmd(['stop'])
+        super(RunningMaster,self).tearDown()

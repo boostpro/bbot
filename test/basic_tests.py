@@ -1,5 +1,6 @@
-from master import BuildMaster
+from master import BuildMaster, RunningMaster
 from bbot.util.quiet_process import check_call
+from os.path import join as pjoin, dirname as pdir
 
 class TrivialMaster(BuildMaster):
     def gen_config_py(self):
@@ -13,8 +14,7 @@ import %(name)s.foo
 import %(name)s
 """ % dict(name=self.name)
 
-
-class non_running_test(TrivialMaster):
+class checkconfig_and_create(BuildMaster):
     def test_checkconfig_in_src_dir(self):
         self.check_cmd(['checkconfig'], cwd=self.src_dir)
 
@@ -24,18 +24,23 @@ class non_running_test(TrivialMaster):
     def test_create_master(self):
         self.check_cmd(['create-master'])
 
-class RunningMaster(BuildMaster):
-    def setUp(self):
-        super(RunningMaster,self).setUp()
-        self.check_cmd(['create-master'])
-        self.check_cmd(['start'])
-
-    def tearDown(self):
-        self.check_cmd(['stop'])
-        super(RunningMaster,self).tearDown()
-
-class trivial_run_test(TrivialMaster, RunningMaster):
+class reconfig_and_stop(RunningMaster):
     def test_reconfig(self):
         self.check_cmd(['reconfig'])
     def test_stop(self):
         self.check_cmd(['stop'])
+
+class trivial_static_tests(TrivialMaster, checkconfig_and_create):
+    pass
+class trivial_running_tests(TrivialMaster, reconfig_and_stop):
+    pass
+
+class LegacyMaster(BuildMaster):
+    def gen_config_py(self):
+        return open(
+            pjoin(pdir(__file__), 'legacy_test_config.py')).read()
+
+class legacy_static_tests(LegacyMaster, checkconfig_and_create):
+    pass
+class legacy_running_tests(LegacyMaster, reconfig_and_stop):
+    pass
