@@ -13,11 +13,20 @@ class Popen(_Popen):
 def call(*args, **kw):
     return _call(*args, **_quiet_args(kw))
 
-def check_call(*args, **kw):
+def check_call(*popenargs, **kwargs):
     # intentionally don't return anything.  _check_call throws if the
     # result would be nonzero, so the return value is meaningless
-    _check_call(*args, **_quiet_args(kw))
+    p = Popen(*popenargs, **kwargs)
+    retcode = p.wait()
 
+    while retcode:
+        l = p.stderr.readline(4096)
+        if l:
+            sys.stderr.write(l)
+        else:
+            cmd = kwargs.get("args") or popenargs[0]
+            raise CalledProcessError(retcode, cmd)
+        
 try:
     from subprocess import check_output as _check_output
 except:
