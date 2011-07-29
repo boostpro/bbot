@@ -2,8 +2,8 @@ bbot
 ====
 
 This is a framework for higher-level configuration of BuildBot_
-masters, used by `BoostPro Computing`:http://boostpro.com for its
-internal testing and by the `Ryppl`:http://ryppl.org project.
+masters, used by `BoostPro Computing <http://www.boostpro.com>`_ for its
+internal testing and by the `Ryppl <http://ryppl.org>`_ project.
 
 .. _BuildBot: http://trac.buildbot.net
 
@@ -49,6 +49,13 @@ Build Variants
 
 Every project is built on every available platform that satisfies the
 project's requirements.
+
+Testing
+-------
+
+To run the project's tests, invoke ``nosetests`` from the top-level
+directory (in addition to BuildBot_, you'll need `nose
+<http://readthedocs.org/docs/nose>`_).
 
 Status
 ------
