@@ -33,7 +33,7 @@ class PublicStatus(object):
     @memoize
     def getBuilder(self, name):
         b = self.__base.getBuilder(name)
-        if not is_public_BuilderStatus(b): 
+        if not is_public_BuilderStatus(b):
             raise KeyError, 'No such public builder'
         return b
 
@@ -42,7 +42,7 @@ class PublicStatus(object):
 
     def getSlave(self, name):
         s = self.__base.getSlave(name)
-        if not is_public_SlaveStatus(s): 
+        if not is_public_SlaveStatus(s):
             raise KeyError, 'No such public slave'
         return s
 
@@ -71,7 +71,7 @@ class FilteredChangeManager(object):
 
     def __getattr__(self, attr):
         return getattr(self.__base, attr)
-    
+
     def eventGenerator(self, branches=[], categories=[],
                             committers=[], minTime=0):
         for change in self.__base.eventGenerator(
@@ -89,7 +89,7 @@ class ChangeFilteredMixin(object):
 
     def getChangeManager(self, request):
         return FilteredChangeManager(
-            self.__base_class.getChangeManager(self,request), 
+            self.__base_class.getChangeManager(self,request),
             self.__filter)
 
 class FilteredWaterfall(ChangeFilteredMixin, WaterfallStatusResource):
@@ -110,7 +110,7 @@ def public_changes(changes):
         if repo:
             return repo.properties.get('public')
     return False
-            
+
 
 from buildbot.status import html
 class FilteredWebStatus(html.WebStatus):

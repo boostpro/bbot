@@ -25,17 +25,17 @@ class non_running_test(TrivialMaster):
 
     def test_create_master(self):
         check_call(['buildbot', 'create-master'], cwd=self.bot_dir, env = self.environ)
-        
+
 class RunningMaster(BuildMaster):
     def setUp(self):
         super(RunningMaster,self).setUp()
         check_call(['buildbot', 'create-master'], cwd=self.bot_dir, env = self.environ)
         check_call(['buildbot', 'start'], cwd=self.bot_dir, env = self.environ)
-        
+
     def tearDown(self):
         check_call(['buildbot', 'stop'], cwd=self.bot_dir, env = self.environ)
         super(RunningMaster,self).tearDown()
-        
+
 class trivial_run_test(TrivialMaster, RunningMaster):
     def test_reconfig(self):
         check_call(['buildbot', 'reconfig'], cwd=self.bot_dir, env = self.environ)

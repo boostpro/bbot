@@ -32,7 +32,7 @@ class Project(object):
     A software project
     """
     def __init__(
-        self, 
+        self,
         name,                       # the project's name, a string
         repositories,               # a sequence of repository.Repository's
         build_procedures,           # a sequence of procedure.BuildProcedure's
@@ -104,8 +104,8 @@ class Project(object):
     def builders(self):
         """A list of this project's builders"""
         return [
-            self.builder(platform,procedure) 
-            for platform in self.platforms 
+            self.builder(platform,procedure)
+            for platform in self.platforms
             for procedure in self.build_procedures]
 
     @const_property
@@ -114,7 +114,7 @@ class Project(object):
         # We need a scheduler for each build procedure
         return [
             AnyBranchScheduler(
-                name=self.name+'-'+procedure.name+'-scheduler', 
+                name=self.name+'-'+procedure.name+'-scheduler',
                 change_filter=self.change_filter,
                 treeStableTimer=30,
                 builderNames=[

@@ -49,9 +49,9 @@ def init_from_module(klass, m):
     for name in params[1:]:
         if name in exports:
             kw[name] = getattr(m, name)
-    
+
     return klass(**kw)
-    
+
 
 def flatten(iter):
     """
@@ -76,11 +76,11 @@ class AutoRepr(object):
         f = getattr(self.__class__, '__getnewargs__', None
                     ) or getattr(self.__class__, '__getinitargs__', None)
         if f:
-            return self.__class__.__name__ + '(' + ', '.join(repr(x) for x in f(self)) + ')' 
+            return self.__class__.__name__ + '(' + ', '.join(repr(x) for x in f(self)) + ')'
         else:
             return object.__repr__(self)
-    
-    
+
+
 if __name__ == '__main__':
     class X(AutoRepr):
         def __init__(self, name):

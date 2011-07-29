@@ -38,7 +38,7 @@ class LocalGit(tempdir.TempDir):
         >>> git.check_call(['rev-parse', 'HEAD'])
         '''
         self.check_call(['add', relpath])
-        
+
     def commit(self, msg='Empty commit message'):
         '''
         >>> git = _nonempty_repo(commit=False)

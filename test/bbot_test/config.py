@@ -5,14 +5,14 @@ from bbot.slave import Slave
 from bbot.procedures import BuildProcedure
 
 BuildmasterConfig = bbot.master(
-    title = 'bbot-test-site', 
-    buildbotURL = 'http://buildbot.net', 
+    title = 'bbot-test-site',
+    buildbotURL = 'http://buildbot.net',
 
 
     slaves = [
         Slave('slave1', 'password1', features=dict(os='OS1', cc=['g++', 'vc8'])),
         Slave('slave2', 'password2', features=dict(os='OS2', cc=['intel', 'clang']))
-        ], 
+        ],
 
     projects = [
         Project('project1',
@@ -23,7 +23,7 @@ BuildmasterConfig = bbot.master(
         Project('project2',
                 repositories=[GitHub('boostpro/bbot')],
                 include_features = ['os', 'cc'],
-                build_procedures=[ 
+                build_procedures=[
                     BuildProcedure('build'), BuildProcedure('test')]
                 ),
         ]

@@ -34,7 +34,7 @@ class TempDir(path.Path):
         Disable the final cleanup action.
         """
         self.__preserved = True
-            
+
     def __del__(self):
         '''
         >>> d = TempDir()

@@ -29,7 +29,7 @@ default_authz=authz.Authz(
 
 def WebStatus(authz=default_authz, order_console_by_time=True, *args, **kw):
     """Generates a StatusFactory for FilteredWebStatus"""
-    return StatusFactory(FilteredWebStatus, *args, 
+    return StatusFactory(FilteredWebStatus, *args,
                          authz=authz,
                          order_console_by_time=order_console_by_time, **kw)
 
@@ -66,7 +66,7 @@ def _revlink(sha, repo):
 def GitHubWebStatus(authz=default_authz, *args, **kw):
     """Generates WebStatus specifically for github projects"""
 
-    return WebStatus(*args, 
+    return WebStatus(*args,
                       authz=authz,
                       order_console_by_time=True,
                       revlink=_revlink,

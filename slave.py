@@ -28,16 +28,16 @@ class Slave(BuildSlave):
         self.__features = features
 
     @property
-    def features(self): 
+    def features(self):
         return self.__features
-    
+
     def prepare(self, passwords):
         BuildSlave.__init__(
             self,
-            self.__name, 
-            self.__password or passwords[self.__name], 
+            self.__name,
+            self.__password or passwords[self.__name],
             *self.__args, **self.__kw)
-    
+
     def platforms(self, relevant_features):
         """
         For a given sorted tuple of features, return a sequence of all
@@ -68,7 +68,7 @@ class Slave(BuildSlave):
         vs = self.__features.get(f, ())
         if isinstance(vs, (str,unicode)) or not isinstance(vs, Iterable):
             vs = (vs,)
-        
+
         tails = self.platforms(i)
 
         r = []

@@ -27,7 +27,7 @@ class GitHubElisp(BuildProcedure):
             Git(repourl='git://github.com/%s.git' % repo),
             SetPropertiesFromEnv(variables=['EMACS']),
             SetProperty(
-                command=[Emacs(), '--batch', '--eval', 
+                command=[Emacs(), '--batch', '--eval',
                          '(princ (make-temp-file "home" t ".bbot"))'],
                 extract_fn=lambda rc, stdout, stderr: dict(FakeHome=stdout)
                 ))

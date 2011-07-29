@@ -78,7 +78,7 @@ class GitHub(Git):
         )
 
     def __init__(self, id, protocol='http'):
-        
+
         super(GitHub,self).__init__(GitHub.protocols[protocol] % id)
         self.id = id
         self.protocol = protocol

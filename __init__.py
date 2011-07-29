@@ -15,7 +15,7 @@ def master(
     status = []
     ):
 
-    
+
     # projects can be a module name whose submodules each describe a
     # project by exporting attributes
     if isinstance(projects, str):
@@ -40,14 +40,14 @@ def master(
     passwords = None
     if os.path.isfile(passwd_path):
         passwords = dict(line.rstrip().split(':') for line in open(passwd_path))
-    
+
     ####### BUILDSLAVES
 
     # The 'slaves' list defines the set of recognized buildslaves. Each
     # element is a BuildSlave object, specifying a unique slave name and
     # password.  The same slave name and password must be configured on
     # the slave.
-    
+
     for s in slaves: s.prepare(passwords)
     c['slaves'] = slaves
 
@@ -70,8 +70,8 @@ def master(
 
     for p in projects:
         p.select_slaves(c['slaves'])
-        
-    # Configure the Schedulers, which decide how to react to incoming changes. 
+
+    # Configure the Schedulers, which decide how to react to incoming changes.
     c['schedulers'] = flatten(p.schedulers for p in projects)
 
     ####### BUILDERS

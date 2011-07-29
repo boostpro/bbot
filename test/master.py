@@ -48,7 +48,7 @@ from %(name)s.config import *
 import bbot
 
 BuildmasterConfig = bbot.master(
-    title = '%(name)s', 
+    title = '%(name)s',
     buildbotURL = 'http://trac.buildbot.net',
     slaves = [],
     projects = []
@@ -62,7 +62,7 @@ BuildmasterConfig = bbot.master(
 
     bot_dir = None
     """Path to the directory where "buildbot create-master" gets run"""
-    
+
     src_dir = None
     """Path to the directory containing the configuration source files"""
 
@@ -85,14 +85,14 @@ BuildmasterConfig = bbot.master(
         master_cfg = self.src_dir/'master.cfg'
         open(master_cfg, 'w').write(
             self.master_cfg_template % dict(name=self.name))
-        
+
         # Add a link to master.cfg in the bot directory
         _link_or_copy(master_cfg, self.bot_dir/'master.cfg')
 
         # Generate config.py
         open(self.src_dir/'config.py', 'w').write(
             self.gen_config_py())
-        
+
     def tearDown(self):
         """
         Make sure the temporary directory is cleaned up.

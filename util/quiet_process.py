@@ -2,8 +2,8 @@ from subprocess import Popen as _Popen, PIPE, STDOUT, call as _call, check_call 
 
 def _quiet_args(kwargs):
     return dict(
-        kwargs, 
-        stdout=kwargs.get('stdout', PIPE), 
+        kwargs,
+        stdout=kwargs.get('stdout', PIPE),
         stderr=kwargs.get('stderr', PIPE))
 
 class Popen(_Popen):
@@ -26,7 +26,7 @@ def check_call(*popenargs, **kwargs):
         else:
             cmd = kwargs.get("args") or popenargs[0]
             raise CalledProcessError(retcode, cmd)
-        
+
 try:
     from subprocess import check_output as _check_output
 except:
@@ -46,4 +46,4 @@ except:
 else:
     def check_output(*args, **kw):
         return _check_output(*args, **dict(kw, stderr=kw.get('stderr', PIPE)))
-                           
+

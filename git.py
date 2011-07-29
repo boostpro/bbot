@@ -28,7 +28,7 @@ def split_url(url):
     """
     Break a git repository url into a tuple:
 
-      (scheme, hostname, path, userpass), 
+      (scheme, hostname, path, userpass),
 
     where:
 
@@ -36,7 +36,7 @@ def split_url(url):
     - hostname is the name of the server
     - path is the path on that server
     - userpass is of the form '', '<username>', or 'username:password'
-    
+
     >>> split_url('git@github.com:boostpro/bbot.git')
     ('ssh', 'github.com', '/boostpro/bbot', 'git')
     >>> split_url('http://github.com/boostpro/bbot')
@@ -44,19 +44,19 @@ def split_url(url):
     >>> split_url('git://github.com/boostpro/bbot.git')
     ('git', 'github.com', '/boostpro/bbot', '')
     """
-    
+
     url_sans_ext = git_ext_pattern.sub('', url)
     git_url = _url_pattern.match(url_sans_ext)
     if git_url:
         parts = (
             git_url.group('scheme') or 'ssh',
-            git_url.group('netloc'),            
+            git_url.group('netloc'),
             '/' + git_url.group('relpath'), '', '')
     else:
         parts = urlsplit(url_sans_ext, scheme='file')
 
     (scheme, netloc, path, query, fragment) = parts
-    
+
     # break netloc into user and host
     userpass,host = ([''] + netloc.split('@'))[-2:]
 
@@ -81,7 +81,7 @@ def probably_same_repo(url1, url2):
     ... , 'http://github.com/boostpro/bbot')
     True
     >>> probably_same_repo(
-    ...    'git://github.com/boostpro/bbot.git', 
+    ...    'git://github.com/boostpro/bbot.git',
     ...    'http://github.com/boostpro/bbot')
     True
     >>> probably_same_repo(

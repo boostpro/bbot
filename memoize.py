@@ -43,13 +43,13 @@ class memoize(object):
             return memos[args]
         memos[args] = result = self.fn(target, *args)
         return result
-    
+
     def __call__(self, *args):
         """
         >>> @memoize
         ... def f(x, y):
         ...     print x, y
-        ... 
+        ...
         >>> for x in range(3):
         ...     for y in range(3):
         ...         f(x,y)
@@ -85,7 +85,7 @@ def const_property(fn):
         @const_property
         def some_attribute_name():
             return compute_the_value();
-    
+
     a = X()
     b = x.some_attribute_name # compute_the_value called here
     c = x.some_attribute_name # compute_the_value not called again

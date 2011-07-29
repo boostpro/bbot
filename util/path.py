@@ -8,7 +8,7 @@ class Path(_base):
   """ Models a path in an object oriented way. """
   sep = os.sep # File system path separator: '/' or '\'.
   pathsep = os.pathsep # Separator in the PATH environment variable.
-  
+
   string = _base
 
   def __new__(cls, *paths):

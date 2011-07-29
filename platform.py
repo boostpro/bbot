@@ -15,7 +15,7 @@ class Platform(tuple):
     >>> x[b]
     1
     >>> x.get(Platform({'os':'win', 'cc':'gcc'}))
-    >>> 
+    >>>
     """
     def __new__(cls, rhs):
         if isinstance(rhs, dict):
