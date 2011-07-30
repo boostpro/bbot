@@ -1,4 +1,5 @@
 from subprocess import Popen as _Popen, PIPE, STDOUT, call as _call, check_call as _check_call, CalledProcessError
+import sys
 
 def _quiet_args(kwargs):
     return dict(
