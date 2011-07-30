@@ -1,0 +1,3 @@
+[submodule "external/buildbot"]
+	path = external/buildbot
+	url = http://github.com/buildbot/buildbot
