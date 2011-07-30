@@ -43,8 +43,6 @@ class Project(object):
     ):
         self.name = name
         self.repositories = repositories
-        for repo in self.repositories:
-            repo.set_properties(include_features, exclude_features)
         self.build_procedures = build_procedures
         self.include_features = include_features
         self.exclude_features = exclude_features
