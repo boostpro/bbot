@@ -74,6 +74,14 @@ class BuildMaster(object):
         if self.running:
             self.stop()
 
+    def gen_config_py(self):
+        """
+        Return a string representing the contents of the buildmaster's
+        config.py file.  Override this method if you want to test a
+        nontrivial configuration.
+        """
+        return self.trivial_config_py_template % dict(name=self.name)
+
     def check_cmd(self, *popenargs, **kwargs):
         cmd = kwargs.pop('args', None)
         if cmd is None:
@@ -84,7 +92,7 @@ class BuildMaster(object):
         quietly.check_call(*popenargs, args=['buildbot']+cmd, env = self.environ, cwd=cwd, **kwargs)
 
     def create_master(self):
-        self.check_cmd(['create-master'])
+        self.check_cmd(['create-master', '-r'])
 
     def start(self):
         self.check_cmd(['start'])
