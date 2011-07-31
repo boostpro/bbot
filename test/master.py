@@ -8,6 +8,7 @@ if _bbot_parent_dir not in sys.path:
 import bbot
 import bbot.util.quiet_process as quietly
 from bbot.util.tempdir import TempDir
+from bbot.test.util import load_template
 
 def _link_or_copy(src, dst):
     """
@@ -27,11 +28,7 @@ class BuildMaster(object):
     #
     # constants
     #
-    def _load_template(name):
-        return open(pjoin(pdir(__file__),name+'.template')).read()
-
-    master_cfg_template = _load_template('master.cfg')
-    trivial_config_py_template = _load_template('trivial-config.py')
+    master_cfg_template = load_template('master.cfg')
 
     environ = dict(
         os.environ.items()
@@ -49,13 +46,11 @@ class BuildMaster(object):
     src_dir = None
     """Path to the directory containing the configuration source files"""
 
-    def __init__(self, name = 'buildmaster'):
-        self.name = name
+    running = False
+    """True iff the buildmaster has been successfully started and not stopped since"""
 
-    def setUp(self):
-        """
-        Prepare a temporary directory containing all the basics
-        """
+    def __init__(self, config_fn, name = 'buildmaster'):
+        self.name = name
         self.bot_dir = TempDir()
 
         # Create a submodule
@@ -73,22 +68,11 @@ class BuildMaster(object):
         _link_or_copy(master_cfg, self.bot_dir/'master.cfg')
 
         # Generate config.py
-        open(self.src_dir/'config.py', 'w').write(
-            self.gen_config_py())
+        config_fn(self.src_dir)
 
-    def tearDown(self):
-        """
-        Make sure the temporary directory is cleaned up.
-        """
-        del self.bot_dir
-
-    def gen_config_py(self):
-        """
-        Return a string representing the contents of the buildmaster's
-        config.py file.  Override this method if you want to test a
-        nontrivial configuration.
-        """
-        return self.trivial_config_py_template % dict(name=self.name)
+    def __del__(self):
+        if self.running:
+            self.stop()
 
     def check_cmd(self, *popenargs, **kwargs):
         cmd = kwargs.pop('args', None)
@@ -99,12 +83,15 @@ class BuildMaster(object):
 
         quietly.check_call(*popenargs, args=['buildbot']+cmd, env = self.environ, cwd=cwd, **kwargs)
 
-class RunningMaster(BuildMaster):
-    def setUp(self):
-        super(RunningMaster,self).setUp()
+    def create_master(self):
         self.check_cmd(['create-master'])
-        self.check_cmd(['start'])
 
-    def tearDown(self):
+    def start(self):
+        self.check_cmd(['start'])
+        self.running = True
+
+    def stop(self):
         self.check_cmd(['stop'])
-        super(RunningMaster,self).tearDown()
+        self.running = False
+
+
