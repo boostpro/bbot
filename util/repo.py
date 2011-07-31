@@ -65,7 +65,7 @@ class LocalGit(tempdir.TempDir):
     def check_call(self, *args, **kw):
         '''
         >>> LocalGit().check_call(['status'])
-        >>> try: LocalGit().check_call(['not a real command'])
+        >>> try: LocalGit().check_call(['expected failure'])
         ... except: pass
         '''
         return quietly.check_call( ['git']+args[0],
