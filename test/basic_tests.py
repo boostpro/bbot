@@ -1,7 +1,9 @@
+import find_bbot
+
 from master import BuildMaster
 from bbot.util.quiet_process import check_call
 from os.path import join as pjoin, dirname as pdir
-from bbot.test.util import load_template
+from util import load_template
 from bbot.util.path import Path
 
 trivial_config_py_template = load_template('trivial-config.py')

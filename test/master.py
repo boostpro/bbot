@@ -1,14 +1,13 @@
-import os, sys, shutil
-from os.path import dirname as pdir, join as pjoin
-
-_bbot_parent_dir = pdir(pdir(pdir(__file__)))
-if _bbot_parent_dir not in sys.path:
-    sys.path.insert(0, _bbot_parent_dir)
-
+import find_bbot
 import bbot
 import bbot.util.quiet_process as quietly
 from bbot.util.tempdir import TempDir
-from bbot.test.util import load_template
+from util import load_template
+from bot import Bot
+
+import os, sys, shutil
+from os.path import dirname as pdir
+
 
 def _link_or_copy(src, dst):
     """
@@ -20,7 +19,7 @@ def _link_or_copy(src, dst):
     except:
         shutil.copyfile(src, dst)
 
-class BuildMaster(object):
+class BuildMaster(Bot):
     """
     Represents a test of a BuildMaster installation
     """
@@ -34,6 +33,8 @@ class BuildMaster(object):
         os.environ.items()
         + [('PYTHONPATH',pdir(pdir(bbot.__file__)))])
 
+    executable = 'buildbot'
+
     #
     # instance attributes
     #
@@ -46,13 +47,10 @@ class BuildMaster(object):
     src_dir = None
     """Path to the directory containing the configuration source files"""
 
-    running = False
-    """True iff the buildmaster has been successfully started and not stopped since"""
-
     def __init__(self, config_fn, name = 'buildmaster'):
+        super(BuildMaster,self).__init__()
         self.name = name
-        self.bot_dir = TempDir()
-
+        
         # Create a submodule
         self.src_dir = self.bot_dir / self.name
         os.mkdir(self.src_dir)
@@ -69,10 +67,6 @@ class BuildMaster(object):
 
         # Generate config.py
         config_fn(self.src_dir)
-
-    def __del__(self):
-        if self.running:
-            self.stop()
 
     def gen_config_py(self):
         """
@@ -93,13 +87,5 @@ class BuildMaster(object):
 
     def create_master(self):
         self.check_cmd(['create-master', '-r'])
-
-    def start(self):
-        self.check_cmd(['start'])
-        self.running = True
-
-    def stop(self):
-        self.check_cmd(['stop'])
-        self.running = False
 
 
