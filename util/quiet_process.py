@@ -20,13 +20,11 @@ def check_call(*popenargs, **kwargs):
     p = Popen(*popenargs, **kwargs)
     retcode = p.wait()
 
-    while retcode:
-        l = p.stderr.readline(4096)
-        if l:
-            sys.stderr.write(l)
-        else:
-            cmd = kwargs.get("args") or popenargs[0]
-            raise CalledProcessError(retcode, cmd)
+    if retcode != 0:
+        sys.stdout.write(p.stdout.read())
+        sys.stderr.write(p.stderr.read())
+        cmd = kwargs.get("args") or popenargs[0]
+        raise CalledProcessError(retcode, cmd)
 
 try:
     from subprocess import check_output as _check_output
