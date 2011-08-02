@@ -1,0 +1,35 @@
+# -*- python -*-
+# ex: set syntax=python:
+import bbot
+from bbot.repository import Git
+from bbot.slave import Slave
+from bbot.procedures import BuildProcedure
+from bbot.project import Project
+from buildbot.steps.shell import Test as Test
+from bbot.util.path import Path
+
+repos=[Git(%(repo0)r), Git(%(repo1)r)]
+
+BuildmasterConfig = bbot.master(
+    title = 'bbot-test-site',
+    buildbotURL = 'http://buildbot.net',
+
+    slaves = [
+        Slave('slave', 'password')
+        ],
+
+    projects = [
+        Project('multi-repo',
+                repositories=repos,
+                build_procedures=[ 
+                   BuildProcedure('test').addSteps(
+                        *repos[0].steps(workdir='a')
+                    ).addSteps(
+                        *repos[1].steps(workdir='b')
+                    ).step(
+                        Test(command=['python', '-c', 'import a'])
+                    )
+                   ]
+                )
+        ]
+)
