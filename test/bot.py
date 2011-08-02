@@ -28,8 +28,8 @@ class Bot(object):
         quietly.check_call(*popenargs, args=[self.executable]+cmd, env = self.environ, cwd=cwd, **kwargs)
     
     def start(self):
-        self.check_cmd(['start'])
         self.running = True
+        self.check_cmd(['start'])
 
     def stop(self):
         self.check_cmd(['stop'])
