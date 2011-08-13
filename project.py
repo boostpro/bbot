@@ -28,6 +28,8 @@ class Project(object):
 
     __all_slaves = None
 
+    treeStableTime = 30
+
     """
     A software project
     """
@@ -114,7 +116,7 @@ class Project(object):
             AnyBranchScheduler(
                 name=self.name+'-'+procedure.name+'-scheduler',
                 change_filter=self.change_filter,
-                treeStableTimer=30,
+                treeStableTimer=self.treeStableTime,
                 builderNames=[
                     self.builder(platform,procedure).name
                     for platform in self.platforms
