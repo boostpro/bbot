@@ -71,6 +71,9 @@ class LocalGit(tempdir.TempDir):
         return quietly.check_call( ['git']+args[0],
             *args[1:], **dict(kw, cwd=kw.get('cwd',self.path)))
     
+    def push(self, remote='origin', refspec='master', **kw):
+        self.check_call(['push', remote, refspec], **kw)
+        
     @property
     def dot_git(self):
         return self if self.endswith('.git') else self/'.git'
