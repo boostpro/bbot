@@ -6,7 +6,12 @@ from bbot.slave import Slave
 from bbot.procedures import BuildProcedure
 from bbot.project import Project
 from buildbot.steps.shell import Test as Test
+from buildbot.changes.pb import PBChangeSource
+from buildbot.status.status_push import HttpStatusPush
 from bbot.util.path import Path
+from bbot.status import StatusFactory
+
+Project.treeStableTime=0
 
 repos=[Git(%(repo0)r), Git(%(repo1)r)]
 
@@ -29,7 +34,8 @@ BuildmasterConfig = bbot.master(
                     ).step(
                         Test(command=['python', '-c', 'import a'])
                     )
-                   ]
+                   ],
+                status= [ lambda project: HttpStatusPush('http://localhost:8087', maxDiskItems=0, bufferDelay=1E-10) ]
                 )
         ]
 )
