@@ -11,6 +11,13 @@ class Popen(_Popen):
     def __init__(self, *args, **kw):
         super(Popen,self).__init__(*args, **_quiet_args(kw))
 
+    def __del__(self):
+        try:
+            self.kill()
+        except:
+            pass
+        super(Popen,self).__del__()
+
 def call(*args, **kw):
     return _call(*args, **_quiet_args(kw))
 
